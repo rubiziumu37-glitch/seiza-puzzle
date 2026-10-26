@@ -1,0 +1,499 @@
+<meta charset="utf-8">
+<title>せいざパズル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* 画面の考え方：960×532 の「舞台」を作り、端末の大きさに合わせて丸ごと拡大・縮小する。
+   宇宙のゲームなので、暗い色の1つの見た目に決めている（明るいテーマは作らない） */
+:root{
+  color-scheme: dark;
+  --sky:#0f1438;        /* 舞台のまわりの夜空 */
+  --navy:#1a1f4a;       /* ピースのふち・文字の濃い色 */
+  --panel:rgba(16,20,58,.62); /* 盤のうしろの板 */
+  --line:#6fb7ff;       /* 水色のふち */
+  --star:#ffd23f;       /* 星の黄色 */
+  --ink:#ffffff;        /* 白い文字 */
+  --soft:#c9d6ff;       /* うすい文字 */
+  --f-dot:"DotGothic16","Zen Maru Gothic",system-ui,sans-serif;   /* 見出しだけドット文字 */
+  --f-body:"Zen Maru Gothic","Hiragino Maru Gothic ProN",system-ui,sans-serif; /* 本文 */
+  --C:52px;             /* 盤のマス1つの大きさ */
+}
+html,body{height:100%}
+body{background:var(--sky);color:var(--ink);font-family:var(--f-body);overflow:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#wrap{position:fixed;inset:0;display:grid;place-items:center}
+#stage{position:relative;width:960px;height:532px;transform-origin:center center;overflow:hidden;touch-action:none;
+  background:var(--sky) url(img/bg_hajimari.png) center/100% 100% no-repeat;image-rendering:pixelated}
+img{image-rendering:pixelated;max-width:none;pointer-events:none}
+.screen{position:absolute;inset:0}
+button{font-family:var(--f-body);font-weight:900;color:var(--ink);cursor:pointer;border:none}
+button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-offset:3px}
+
+/* 丸いボタン（タッチ用に大きく） */
+.pill{background:rgba(20,26,70,.9);border:4px solid var(--line);border-radius:999px;font-size:26px;padding:10px 34px}
+.pill:active{transform:translateY(2px)}
+.pill.gold{background:var(--star);color:var(--navy);border-color:#fff3a0}
+.tag{position:absolute;left:50%;transform:translateX(-50%);top:10px;background:rgba(20,26,70,.9);border:3px solid var(--line);
+  border-radius:999px;padding:6px 26px;font-family:var(--f-dot);font-size:22px;white-space:nowrap}
+
+/* タイトル */
+#title .logo{position:absolute;left:0;right:0;top:92px;text-align:center;font-family:var(--f-dot);font-size:72px;letter-spacing:.08em;
+  color:var(--star);text-shadow:0 4px 0 var(--navy),0 0 24px rgba(255,210,63,.45)}
+#title .sub{position:absolute;left:0;right:0;top:186px;text-align:center;font-size:22px;color:var(--soft);font-weight:700}
+#title .go{position:absolute;left:50%;top:300px;transform:translateX(-50%);font-size:34px;padding:14px 60px}
+#title .hero{position:absolute;left:39px;top:170px;width:162px}
+#title .usagi{position:absolute;left:766px;top:148px;width:148px}
+
+/* はじめての登録：番号は数字ボタン、名前はランダム（自分で打つこともできる） */
+#reg .card{position:absolute;left:120px;top:34px;width:720px;background:var(--panel);border:3px solid var(--line);border-radius:18px;
+  padding:14px 26px;display:grid;grid-template-columns:300px 1fr;gap:8px 28px;box-sizing:border-box}
+#reg h2{grid-column:1/-1;margin:0;font-family:var(--f-dot);font-size:28px;font-weight:400;text-align:center}
+#reg .col{display:flex;flex-direction:column;gap:8px;min-width:0}
+#reg .lab{font-size:20px;font-weight:700}
+#reg .idbox{height:50px;border-radius:12px;background:#fff;color:var(--navy);font-size:36px;font-weight:900;display:grid;place-items:center;letter-spacing:4px}
+#reg .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#reg .keys button{height:46px;border-radius:12px;background:rgba(20,26,70,.95);border:3px solid var(--line);font-size:26px}
+#reg .keys button:active{background:var(--line);color:var(--navy)}
+#reg .keys .del{font-size:18px}
+#reg .namebox{min-height:84px;border-radius:14px;background:#fff;color:var(--navy);font-size:34px;font-weight:900;display:grid;place-items:center;text-align:center;padding:6px 10px;line-height:1.2}
+#reg .row{display:flex;gap:10px;flex-wrap:wrap}
+#reg .row .pill{font-size:20px;padding:8px 20px;border-width:3px}
+#reg input{font-family:var(--f-body);font-size:28px;padding:10px 14px;border-radius:12px;border:3px solid var(--line);background:#fff;color:var(--navy);min-width:0}
+#reg .note{font-size:16px;color:var(--soft);margin:0}
+#reg .foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px}
+#reg .err{font-size:18px;color:#ffb3c6;margin:0;min-height:1.2em}
+
+/* 銀河の地図 */
+#map .who{position:absolute;left:14px;top:12px;font-size:18px;font-weight:700;background:rgba(20,26,70,.85);border-radius:999px;padding:6px 16px;border:2px solid var(--line)}
+#map .node{position:absolute;width:92px;height:110px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none}
+#map .ring{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:rgba(20,26,70,.82);border:4px solid #3a4796;overflow:hidden}
+#map .ring img{height:66px}
+#map .node.open .ring{border-color:var(--star);box-shadow:0 0 0 4px rgba(255,210,63,.28),0 0 22px rgba(255,210,63,.6);animation:pulse 1.6s ease-in-out infinite}
+#map .node.done .ring{border-color:var(--line)}
+#map .node.lock img{filter:brightness(.28) saturate(0)}
+#map .node .lbl{font-family:var(--f-dot);font-size:17px;text-shadow:0 2px 0 var(--navy)}
+#map .node .stars{font-size:14px;color:var(--star);letter-spacing:1px;height:16px;text-shadow:0 1px 0 var(--navy)}
+#map .node.boss .ring{width:96px;height:96px}
+#map .msg{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(20,26,70,.9);border:3px solid var(--line);border-radius:14px;
+  padding:8px 22px;font-size:20px;font-weight:700;white-space:nowrap}
+#map svg.path{position:absolute;inset:0;pointer-events:none}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,210,63,.12),0 0 30px rgba(255,210,63,.8)}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* 戦い */
+#battle .hero{position:absolute;left:39px;top:170px;width:162px}
+#battle .foe{position:absolute;left:766px;top:148px;width:148px;filter:saturate(.35) brightness(.6);transition:filter 1.2s ease}
+#battle .foe.healed{filter:none}
+#battle .board-panel{position:absolute;left:232px;top:58px;width:496px;height:378px;background:var(--panel);border:2px solid rgba(111,183,255,.5);border-radius:20px}
+#battle .quit{position:absolute;left:14px;top:12px;font-size:18px;padding:6px 18px;border-width:3px}
+#battle .hintbtn{position:absolute;left:50%;top:448px;transform:translateX(-50%)}
+.cell{position:absolute;width:var(--C);height:var(--C);box-sizing:border-box}
+.cell.empty{background:rgba(20,26,70,.88);border:2px solid var(--line)}
+.cell.empty::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;background:rgba(255,226,120,.55)}
+.cell.hint{animation:hint 1s steps(2) infinite}
+@keyframes hint{50%{background:rgba(255,210,63,.55)}}
+/* ピース：ドット風のふち・光・影を、内側の影で描く */
+.piece{position:absolute;touch-action:none;z-index:5;transform-origin:0 0;transition:transform .15s ease}
+.piece.small{transform:scale(.7)}
+.piece.drag{z-index:20;filter:drop-shadow(0 10px 0 rgba(0,0,0,.25))}
+.piece.home{transition:left .18s ease,top .18s ease,transform .15s ease}
+.piece .blk{position:absolute;width:var(--C);height:var(--C);box-sizing:border-box;border:3px solid var(--navy);
+  box-shadow:inset 5px 5px 0 var(--hi),inset -5px -5px 0 var(--sh);background:var(--bd)}
+.piece .blk::after{content:"";position:absolute;left:7px;top:7px;width:5px;height:5px;background:#fff}
+.piece.sel .blk{outline:3px solid #fff;outline-offset:-1px}
+.c-yel{--bd:#ffd23f;--hi:#fff3a0;--sh:#de9614}
+.c-pnk{--bd:#f06c9b;--hi:#ffbed7;--sh:#be3c6e}
+.c-mnt{--bd:#3cc47c;--hi:#aaf0c8;--sh:#1e8c55}
+
+/* なおった！ */
+#result{position:absolute;left:262px;top:282px;width:436px;background:rgba(20,26,70,.95);border:4px solid var(--star);border-radius:18px;
+  padding:14px 20px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:30}
+#result .big{font-family:var(--f-dot);font-size:40px;color:var(--star);line-height:1}
+#result .st{font-size:34px;letter-spacing:6px;color:var(--star);line-height:1}
+#result .st .off{color:#4a5590}
+#result .ally{font-size:20px;font-weight:700}
+.spark{position:absolute;width:8px;height:8px;background:var(--star);z-index:6;
+  box-shadow:8px 0 0 var(--star),-8px 0 0 var(--star),0 8px 0 var(--star),0 -8px 0 var(--star);animation:tw 1s steps(2) infinite}
+@keyframes tw{50%{opacity:.2}}
+
+/* やめるかの確認（ページの中に作る） */
+.ask{position:absolute;inset:0;background:rgba(10,12,40,.6);display:grid;place-items:center;z-index:40}
+.ask .box{background:rgba(20,26,70,.97);border:4px solid var(--line);border-radius:18px;padding:22px 30px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.ask p{margin:0;font-size:26px;font-weight:900}
+.ask .row{display:flex;gap:20px}
+
+/* たて向きのときの案内 */
+#turn{position:fixed;inset:0;background:var(--sky);display:none;place-items:center;text-align:center;z-index:99;font-size:28px;font-weight:900;padding:24px}
+@media (orientation:portrait){#turn{display:grid}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="wrap"><div id="stage">
+
+  <!-- タイトル -->
+  <section class="screen" id="title">
+    <img class="hero" src="img/hero.png" alt="">
+    <img class="usagi" src="img/usagi.png" alt="" style="filter:saturate(.35) brightness(.6)">
+    <div class="logo">せいざパズル</div>
+    <div class="sub">こわれた せいざを なおす 宇宙の たび</div>
+    <button class="pill gold go" id="btnStart">はじめる</button>
+  </section>
+
+  <!-- はじめての登録 -->
+  <section class="screen" id="reg" hidden>
+    <form class="card" id="regForm" autocomplete="off">
+      <h2>はじめまして！</h2>
+      <div class="col">
+        <div class="lab">しゅっせき ばんごう</div>
+        <div class="idbox" id="idBox" aria-live="polite">－</div>
+        <div class="keys" id="keys"></div>
+      </div>
+      <div class="col">
+        <div class="lab">あなたの なまえ</div>
+        <div class="namebox" id="nameBox" aria-live="polite"></div>
+        <input id="inNick" maxlength="8" placeholder="なまえを うってね" hidden>
+        <div class="row">
+          <button class="pill" type="button" id="btnReroll">ほかの なまえ</button>
+          <button class="pill" type="button" id="btnSelf">じぶんで うつ</button>
+        </div>
+        <p class="note">ほんとうの なまえは いれないでね。</p>
+      </div>
+      <div class="foot">
+        <p class="err" id="regErr"></p>
+        <button class="pill gold" type="submit">けってい</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 銀河の地図 -->
+  <section class="screen" id="map" hidden>
+    <svg class="path" viewBox="0 0 960 532" aria-hidden="true"><polyline id="mapLine" fill="none" stroke="rgba(255,226,120,.55)" stroke-width="4" stroke-dasharray="4 10"/></svg>
+    <div class="who" id="who"></div>
+    <div class="tag">はじまりの 銀河</div>
+    <div id="nodes"></div>
+    <div class="msg" id="mapMsg">ひかっている せいざを タッチしよう</div>
+  </section>
+
+  <!-- 戦い -->
+  <section class="screen" id="battle" hidden>
+    <img class="hero" src="img/hero.png" alt="">
+    <img class="foe" id="foe" src="img/usagi.png" alt="">
+    <div class="board-panel"></div>
+    <div class="tag" id="bTag"></div>
+    <button class="pill quit" id="btnQuit">やめる</button>
+    <div id="field"></div>
+    <button class="pill hintbtn" id="btnHint">ヒント</button>
+  </section>
+
+</div></div>
+<div id="turn">タブレットを よこに してね</div>
+
+<script>
+/* ===== 1. 設定と、問題のデータ ===================================== */
+const SAVE_KEY = 'seizapuzzle_save_v1';   // 保存の名前（一度決めたら変えない）
+const C = 52;                             // マス1つの大きさ（舞台の中の点の数）
+const BOARD_TOP = 80;                     // 盤のいちばん上の位置
+const TRAY = 0.7;                         // 手持ちのピースの大きさ（盤の70%）
+
+// いきもの（IDはローマ字。一度決めたら変えない）
+const CREATURES = {
+  usagi:{name:'うさぎ座'}, neko:{name:'ねこ座'}, inu:{name:'いぬ座'}, hiyoko:{name:'ひよこ座'},
+  kuma:{name:'くま座'}, kaeru:{name:'かえる座'}, buta:{name:'ぶた座'}, risu:{name:'りす座'}, zou:{name:'ぞう座'}
+};
+// 地図にならべる順番（はじまりの銀河）
+const MAP1 = ['usagi','neko','inu','hiyoko','kuma','kaeru','buta','risu','zou'];
+
+// ステージ（①では 1-1 だけ）。board＝盤のマス、pieces＝ピースの形と正解の位置
+const STAGES = {
+  '1-1':{ galaxy:1, no:1, boss:false, creature:'usagi', rotate:false,
+    board:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[1,3],[2,1]],
+    pieces:[
+      {id:'I3', color:'yel', cells:[[0,0],[0,1],[0,2]], ans:[0,0], home:[328,334]},
+      {id:'L3', color:'pnk', cells:[[0,0],[0,1],[1,1]], ans:[1,0], home:[487,316]},
+      {id:'D2', color:'mnt', cells:[[0,0],[0,1]],       ans:[1,2], home:[610,334]}
+    ]}
+};
+// ★の基準（とりあえずの数値。試遊のあとで決め直す）
+function starsFor(sec){ return sec<=30 ? 3 : sec<=60 ? 2 : 1; }
+
+/* ===== 2. 保存（端末の中） ========================================= */
+function newSave(){
+  return { v:1, player:null, settings:{startGalaxy:1}, progress:{}, allies:[], logs:[] };
+}
+let save = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return newSave();
+    const d = JSON.parse(raw);
+    // あとから項目が増えても、足りないところだけ足す（今ある記録は消さない）
+    return Object.assign(newSave(), d);
+  }catch(e){ return newSave(); }
+}
+function store(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){ /* 保存できない端末でも遊べる */ }
+}
+
+/* ===== 3. 画面の切りかえと、大きさ合わせ =========================== */
+const $ = s => document.querySelector(s);
+const stage = $('#stage');
+let scale = 1;
+function fit(){
+  scale = Math.min(window.innerWidth/960, window.innerHeight/532);
+  stage.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fit); fit();
+function show(id){
+  ['title','reg','map','battle'].forEach(s => $('#'+s).hidden = (s!==id));
+}
+// 指の位置を、舞台の中の位置に変える
+function toStage(e){
+  const r = stage.getBoundingClientRect();
+  return { x:(e.clientX - r.left)/scale, y:(e.clientY - r.top)/scale };
+}
+
+/* ===== 4. タイトルと登録 =========================================== */
+$('#btnStart').addEventListener('click', () => {
+  if(save.player) openMap(); else openReg();
+});
+// ランダムな なまえ（ことば × 宇宙のもの）
+const NAME_A = ['きらきら','ふわふわ','にこにこ','ぴかぴか','げんきな','ひかる','そらとぶ','ちいさな','まるい','はやい'];
+const NAME_B = ['ほし','すいせい','ロケット','つき','わくせい','ほうきぼし','ユーフォー','ぎんが','オーロラ','にじ','うちゅうねこ','ほしうさぎ'];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+let regId = '', regNick = '', selfMode = false;
+function rollName(){
+  let n; do{ n = pick(NAME_A)+' '+pick(NAME_B); }while(n===regNick);
+  regNick = n; $('#nameBox').textContent = n;
+}
+function openReg(){
+  show('reg'); regId=''; selfMode=false; $('#idBox').textContent='－'; $('#regErr').textContent='';
+  $('#inNick').hidden = true; $('#nameBox').hidden = false; $('#btnReroll').hidden = false;
+  $('#btnSelf').textContent = 'じぶんで うつ'; rollName();
+}
+// 数字ボタン（0〜9 と けす）
+['1','2','3','4','5','6','7','8','9','けす','0'].forEach(k => {
+  const b = document.createElement('button'); b.type='button'; b.textContent=k;
+  if(k==='けす') b.className='del';
+  b.addEventListener('click', () => {
+    if(k==='けす') regId = regId.slice(0,-1);
+    else if(regId.length<4) regId = (regId==='0' ? '' : regId) + k;
+    $('#idBox').textContent = regId || '－';
+  });
+  $('#keys').appendChild(b);
+});
+$('#btnReroll').addEventListener('click', rollName);
+$('#btnSelf').addEventListener('click', () => {
+  selfMode = !selfMode;
+  $('#inNick').hidden = !selfMode; $('#nameBox').hidden = selfMode; $('#btnReroll').hidden = selfMode;
+  $('#btnSelf').textContent = selfMode ? 'ランダムに もどす' : 'じぶんで うつ';
+  if(selfMode){ $('#inNick').value=''; $('#inNick').focus(); }
+});
+$('#regForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const nick = selfMode ? $('#inNick').value.trim() : regNick;
+  if(!regId){ $('#regErr').textContent = 'ばんごうを おしてね'; return; }
+  if(!nick){ $('#regErr').textContent = 'なまえを うってね'; return; }
+  save.player = { id:regId, nick }; store(); openMap();
+});
+
+/* ===== 5. 銀河の地図 =============================================== */
+// ノードの位置（なみの形にならべる）
+const NODE_POS = [[150,300],[240,220],[330,300],[420,220],[510,300],[600,220],[690,300],[780,220],[850,330]];
+function openMap(){
+  show('map');
+  $('#who').textContent = `${save.player.nick} さん`;
+  const box = $('#nodes'); box.innerHTML = '';
+  $('#mapLine').setAttribute('points', NODE_POS.map(([x,y]) => `${x},${y}`).join(' '));
+  MAP1.forEach((cid, i) => {
+    const sid = i===8 ? '1-B' : `1-${i+1}`;
+    const exists = !!STAGES[sid];
+    const done = !!save.progress[sid];
+    const open = exists && !done;
+    const b = document.createElement('button');
+    b.className = 'node' + (i===8?' boss':'') + (done?' done':open?' open':' lock');
+    const [x,y] = NODE_POS[i];
+    b.style.left = (x-46)+'px'; b.style.top = (y-50)+'px';
+    const st = done ? '★'.repeat(save.progress[sid].stars) : '';
+    b.innerHTML = `<span class="ring"><img src="img/${cid}.png" alt=""></span><span class="lbl">${i===8?'ボス':sid}</span><span class="stars">${st}</span>`;
+    b.setAttribute('aria-label', done||open ? `${sid} ${CREATURES[cid].name}` : `${sid} まだ ひらいていない`);
+    b.addEventListener('click', () => {
+      if(exists){ startBattle(sid); return; }
+      b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+      $('#mapMsg').textContent = 'この せいざは じゅんびちゅう だよ';
+    });
+    box.appendChild(b);
+  });
+  $('#mapMsg').textContent = Object.keys(save.progress).length ? 'なおした せいざは もういちど あそべるよ' : 'ひかっている せいざを タッチしよう';
+}
+
+/* ===== 6. 戦い ===================================================== */
+let B = null; // いまの戦いのようす
+function startBattle(sid){
+  const S = STAGES[sid];
+  show('battle');
+  $('#bTag').textContent = `はじまりの 銀河  ${sid}  ${CREATURES[S.creature].name}`;
+  const foe = $('#foe'); foe.src = `img/${S.creature}.png`; foe.classList.remove('healed');
+  $('#btnHint').hidden = false;
+  const field = $('#field'); field.innerHTML = '';
+  // 盤の左の位置（まん中にそろえる）
+  const cols = Math.max(...S.board.map(c=>c[1]))+1;
+  const left = 480 - cols*C/2;
+  B = { sid, S, left, t0:performance.now(), occ:{}, placed:{}, sel:null,
+        rot:0, rotMin:0, flip:0, replace:0, hint:{h4:0,h1:0,h2:0}, firstHint:null, over:false };
+  // 盤のマス
+  B.cellEls = {};
+  S.board.forEach(([r,c]) => {
+    const d = document.createElement('div'); d.className = 'cell empty';
+    d.style.left = (left + c*C)+'px'; d.style.top = (BOARD_TOP + r*C)+'px';
+    field.appendChild(d); B.cellEls[r+','+c] = d;
+  });
+  // ピース
+  B.els = {};
+  S.pieces.forEach(p => {
+    const el = document.createElement('div'); el.className = `piece home small c-${p.color}`;
+    const w = (Math.max(...p.cells.map(c=>c[1]))+1)*C, h = (Math.max(...p.cells.map(c=>c[0]))+1)*C;
+    el.style.width = w+'px'; el.style.height = h+'px';
+    p.cells.forEach(([r,c]) => { const k = document.createElement('div'); k.className='blk'; k.style.left=(c*C)+'px'; k.style.top=(r*C)+'px'; el.appendChild(k); });
+    el.style.left = p.home[0]+'px'; el.style.top = p.home[1]+'px';
+    field.appendChild(el); B.els[p.id] = el;
+    bindDrag(el, p);
+  });
+}
+
+// ピースを指で動かす
+function bindDrag(el, p){
+  let start=null, off=null, moved=false;
+  el.addEventListener('pointerdown', e => {
+    if(B.over) return;
+    e.preventDefault(); el.setPointerCapture(e.pointerId);
+    const s = toStage(e);
+    // 手持ちのときは小さいので、大きくなっても指の下の場所がずれないように合わせる
+    const sc = B.placed[p.id] ? 1 : TRAY;
+    start = s; off = { x:(s.x - parseFloat(el.style.left))/sc, y:(s.y - parseFloat(el.style.top))/sc }; moved=false;
+    select(p.id);
+  });
+  el.addEventListener('pointermove', e => {
+    if(!start) return;
+    const s = toStage(e);
+    if(!moved && Math.hypot(s.x-start.x, s.y-start.y) > 8){
+      moved = true; el.classList.remove('home','small'); el.classList.add('drag');
+      if(B.placed[p.id]){ unplace(p); B.replace++; }   // 盤から持ち上げた＝置き直し
+    }
+    if(moved){ el.style.left = (s.x-off.x)+'px'; el.style.top = (s.y-off.y)+'px'; }
+  });
+  const end = () => {
+    if(!start) return;
+    start = null; el.classList.remove('drag');
+    if(!moved){
+      // タップ：盤の上のピースなら手持ちにもどす
+      if(B.placed[p.id]){ unplace(p); B.replace++; goHome(el,p); }
+      return;
+    }
+    // いちばん近いマスに吸いつけて、入るかどうか調べる
+    const c = Math.round((parseFloat(el.style.left) - B.left)/C);
+    const r = Math.round((parseFloat(el.style.top) - BOARD_TOP)/C);
+    if(fits(p, r, c)){ place(p, r, c); el.style.left=(B.left+c*C)+'px'; el.style.top=(BOARD_TOP+r*C)+'px'; checkClear(); }
+    else goHome(el, p);
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+}
+function goHome(el,p){ el.classList.add('home','small'); el.style.left=p.home[0]+'px'; el.style.top=p.home[1]+'px'; }
+function fits(p, r, c){
+  return p.cells.every(([dr,dc]) => {
+    const k = (r+dr)+','+(c+dc);
+    return B.cellEls[k] && !B.occ[k];
+  });
+}
+function place(p, r, c){
+  B.placed[p.id] = [r,c];
+  p.cells.forEach(([dr,dc]) => B.occ[(r+dr)+','+(c+dc)] = p.id);
+  clearHint();
+}
+function unplace(p){
+  const at = B.placed[p.id]; if(!at) return;
+  p.cells.forEach(([dr,dc]) => delete B.occ[(at[0]+dr)+','+(at[1]+dc)]);
+  delete B.placed[p.id];
+}
+function select(id){
+  B.sel = id;
+  Object.entries(B.els).forEach(([k,el]) => el.classList.toggle('sel', k===id));
+}
+
+// 手助け：置き場所を光らせる（①はこれだけ）
+$('#btnHint').addEventListener('click', () => {
+  if(!B || B.over) return;
+  // えらんでいるピースが盤の上なら、まだ置いていないピースをえらぶ
+  let p = B.S.pieces.find(q => q.id===B.sel && !B.placed[q.id]) || B.S.pieces.find(q => !B.placed[q.id]);
+  if(!p) return;
+  select(p.id);
+  clearHint();
+  p.cells.forEach(([dr,dc]) => { const el = B.cellEls[(p.ans[0]+dr)+','+(p.ans[1]+dc)]; if(el) el.classList.add('hint'); });
+  B.hint.h1++;
+  if(B.firstHint===null) B.firstHint = Math.round((performance.now()-B.t0)/1000);
+});
+function clearHint(){ document.querySelectorAll('.cell.hint').forEach(el => el.classList.remove('hint')); }
+
+// ぜんぶ埋まったか
+function checkClear(){
+  if(Object.keys(B.occ).length !== B.S.board.length) return;
+  B.over = true; clearHint(); select(null);
+  const sec = Math.round((performance.now()-B.t0)/1000);
+  const stars = starsFor(sec);
+  record('clear', sec, stars);
+  // すすみ・なかま
+  const old = save.progress[B.sid];
+  save.progress[B.sid] = { stars: Math.max(stars, old?old.stars:0), bestSec: Math.min(sec, old?old.bestSec:sec) };
+  const first = !save.allies.includes(B.S.creature);
+  if(first) save.allies.push(B.S.creature);
+  store();
+  // いきものが元気になる
+  $('#foe').classList.add('healed');
+  sparkle();
+  $('#btnHint').hidden = true;
+  const card = document.createElement('div'); card.id = 'result';
+  card.innerHTML = `<div class="big">なおった！</div>
+    <div class="st">${'★'.repeat(stars)}<span class="off">${'★'.repeat(3-stars)}</span></div>
+    <div class="ally">${CREATURES[B.S.creature].name}が ${first?'なかまに なった！':'よろこんでいるよ！'}</div>
+    <button class="pill gold" id="btnBack">ちずへ もどる</button>`;
+  $('#field').appendChild(card);
+  $('#btnBack').addEventListener('click', openMap);
+}
+function sparkle(){
+  [[770,140],[900,170],[760,300],[905,320],[835,120]].forEach(([x,y],i) => {
+    const s = document.createElement('div'); s.className='spark';
+    s.style.left=x+'px'; s.style.top=y+'px'; s.style.animationDelay=(i*0.2)+'s';
+    $('#field').appendChild(s);
+  });
+}
+
+// 1ステージの記録を残す（仕様書 9-2 の項目）
+function record(result, sec, stars){
+  save.logs.push({
+    t: new Date().toISOString(), galaxy:B.S.galaxy, stage:B.sid, boss:B.S.boss, creature:B.S.creature,
+    result, stars, sec,
+    rot:B.rot, rotMin:B.rotMin, rotWaste:Math.max(0, B.rot-B.rotMin),
+    flip:B.flip, replace:B.replace,
+    hint:{...B.hint}, firstHintSec:B.firstHint
+  });
+  store();
+}
+
+/* ===== 7. やめる（確認はページの中で） ============================== */
+$('#btnQuit').addEventListener('click', () => {
+  if(B && B.over){ openMap(); return; }
+  const a = document.createElement('div'); a.className='ask';
+  a.innerHTML = `<div class="box"><p>やめて ちずに もどる？</p>
+    <div class="row"><button class="pill" id="askNo">つづける</button><button class="pill gold" id="askYes">やめる</button></div></div>`;
+  stage.appendChild(a);
+  a.querySelector('#askNo').addEventListener('click', () => a.remove());
+  a.querySelector('#askYes').addEventListener('click', () => {
+    a.remove();
+    record('quit', Math.round((performance.now()-B.t0)/1000), 0);
+    B.over = true; openMap();
+  });
+});
+
+show('title');
+</script>
