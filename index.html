@@ -16,7 +16,8 @@
   --soft:#c9d6ff;       /* うすい文字 */
   --f-dot:"DotGothic16","Zen Maru Gothic",system-ui,sans-serif;   /* 見出しだけドット文字 */
   --f-body:"Zen Maru Gothic","Hiragino Maru Gothic ProN",system-ui,sans-serif; /* 本文 */
-  --C:52px;             /* 盤のマス1つの大きさ */
+  --C:52px;             /* 盤のマス1つの大きさ（ステージごとに変わる） */
+  --ts:.7;              /* 手持ちのピースの大きさ（盤に対する割合） */
 }
 html,body{height:100%}
 body{background:var(--sky);color:var(--ink);font-family:var(--f-body);overflow:hidden;
@@ -35,6 +36,7 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 .pill.gold{background:var(--star);color:var(--navy);border-color:#fff3a0}
 .tag{position:absolute;left:50%;transform:translateX(-50%);top:10px;background:rgba(20,26,70,.9);border:3px solid var(--line);
   border-radius:999px;padding:6px 26px;font-family:var(--f-dot);font-size:22px;white-space:nowrap}
+.testbadge{position:absolute;right:12px;bottom:8px;background:#f06c9b;color:#fff;font-size:14px;font-weight:900;padding:3px 10px;border-radius:8px;z-index:50}
 
 /* タイトル */
 #title .logo{position:absolute;left:0;right:0;top:92px;text-align:center;font-family:var(--f-dot);font-size:72px;letter-spacing:.08em;
@@ -42,7 +44,7 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 #title .sub{position:absolute;left:0;right:0;top:186px;text-align:center;font-size:22px;color:var(--soft);font-weight:700}
 #title .go{position:absolute;left:50%;top:300px;transform:translateX(-50%);font-size:34px;padding:14px 60px}
 #title .hero{position:absolute;left:39px;top:170px;width:162px}
-#title .usagi{position:absolute;left:766px;top:148px;width:148px}
+#title .usagi{position:absolute;left:766px;top:148px;width:148px;filter:saturate(.35) brightness(.6)}
 
 /* はじめての登録：番号は数字ボタン、名前はランダム（自分で打つこともできる） */
 #reg .card{position:absolute;left:120px;top:34px;width:720px;background:var(--panel);border:3px solid var(--line);border-radius:18px;
@@ -65,9 +67,11 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 
 /* 銀河の地図 */
 #map .who{position:absolute;left:14px;top:12px;font-size:18px;font-weight:700;background:rgba(20,26,70,.85);border-radius:999px;padding:6px 16px;border:2px solid var(--line)}
+#map .arrow{position:absolute;top:8px;width:52px;height:44px;border-radius:999px;background:rgba(20,26,70,.9);border:3px solid var(--line);font-size:22px}
+#map .arrow.l{left:calc(50% - 230px)} #map .arrow.r{left:calc(50% + 178px)}
 #map .node{position:absolute;width:92px;height:110px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none}
 #map .ring{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:rgba(20,26,70,.82);border:4px solid #3a4796;overflow:hidden}
-#map .ring img{height:66px}
+#map .ring img{max-height:66px;max-width:70px}
 #map .node.open .ring{border-color:var(--star);box-shadow:0 0 0 4px rgba(255,210,63,.28),0 0 22px rgba(255,210,63,.6);animation:pulse 1.6s ease-in-out infinite}
 #map .node.done .ring{border-color:var(--line)}
 #map .node.lock img{filter:brightness(.28) saturate(0)}
@@ -81,38 +85,135 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 .shake{animation:shake .35s}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
+/* パートナー（主人公の足もと） */
+.partner{position:absolute;z-index:4}
+#map .zbtn{position:absolute;right:14px;top:10px;font-size:20px;padding:6px 20px;border-width:3px}
+
+/* なかま ずかん */
+#zukan .back{position:absolute;left:14px;top:12px;font-size:18px;padding:6px 18px;border-width:3px}
+#zukan .rows{position:absolute;left:24px;right:24px;top:62px;display:flex;flex-direction:column;gap:6px}
+#zukan .gname{font-family:var(--f-dot);font-size:15px;color:var(--soft);margin:0 0 2px 6px}
+#zukan .row9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+#zukan .zc{position:relative;overflow:hidden;height:100px;border-radius:12px;background:rgba(20,26,70,.85);border:3px solid #3a4796;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0}
+#zukan .zc .st{font-size:11px;letter-spacing:1px;line-height:1;height:11px;color:var(--star)}
+#zukan .zc img{max-height:62px;max-width:76px}
+#zukan .zc .nm{font-size:12px;font-weight:700;color:var(--soft);white-space:nowrap}
+#zukan .zc.lock img{filter:brightness(.25) saturate(0)}
+/* ★1 銅：二重のわく */
+#zukan .zc.b1{border:5px double #c98a4b;background:rgba(60,36,20,.75)}
+/* ★2 銀：太いわく＋四すみの星 */
+#zukan .zc.b2{border:5px solid #dfe7f3;background:
+  radial-gradient(circle at 7px 7px,#fff 2px,transparent 3px),radial-gradient(circle at calc(100% - 7px) 7px,#fff 2px,transparent 3px),
+  radial-gradient(circle at 7px calc(100% - 7px),#fff 2px,transparent 3px),radial-gradient(circle at calc(100% - 7px) calc(100% - 7px),#fff 2px,transparent 3px),
+  linear-gradient(rgba(150,165,195,.45),rgba(60,70,110,.85))}
+/* ★3 金：金のグラデーションのわく＋かんむり＋光が走る */
+#zukan .zc.b3{border:5px solid transparent;background:
+  linear-gradient(rgba(120,86,10,.85),rgba(60,40,5,.92)) padding-box,
+  linear-gradient(135deg,#fff3a0,#ffb300 35%,#fff3a0 55%,#c98a00) border-box;box-shadow:0 0 14px rgba(255,210,63,.75)}
+#zukan .zc.b3::before{content:"";position:absolute;top:3px;left:50%;width:22px;height:12px;margin-left:-11px;background:#ffd23f;
+  clip-path:polygon(0 100%,0 20%,25% 60%,50% 0,75% 60%,100% 20%,100% 100%);z-index:2}
+#zukan .zc.b3::after{content:"";position:absolute;top:-20%;bottom:-20%;width:30%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);
+  transform:skewX(-15deg);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,60%{left:-60%}100%{left:140%}}
+#zukan .zc.pt{outline:3px dashed #fff;outline-offset:2px}
+#zukan .suits{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;align-items:center;gap:12px}
+#zukan .suits .lab{font-size:18px;font-weight:700}
+#zukan .suit{width:120px;height:44px;border-radius:999px;border:3px solid var(--line);background:rgba(20,26,70,.9);font-size:17px;display:flex;align-items:center;justify-content:center;gap:6px}
+#zukan .suit i{width:16px;height:16px;border-radius:50%;display:inline-block}
+#zukan .suit.on{background:var(--star);color:var(--navy);border-color:#fff3a0}
+#zukan .suit:disabled{opacity:.4}
+#card{position:absolute;inset:0;background:rgba(10,12,40,.65);display:grid;place-items:center;z-index:45}
+#card .box{width:640px;background:rgba(20,26,70,.98);border:5px solid #3a4796;border-radius:20px;padding:18px 24px;display:grid;grid-template-columns:230px 1fr;gap:6px 22px;box-sizing:border-box}
+#card .box{position:relative}
+#card .box.b1{border:7px double #c98a4b}
+#card .box.b2{border:6px solid #dfe7f3;background:linear-gradient(rgba(150,165,195,.35),rgba(20,26,70,.98) 45%)}
+#card .box.b3{border:6px solid transparent;background:linear-gradient(rgba(110,80,10,.96),rgba(20,26,70,.98) 55%) padding-box,linear-gradient(135deg,#fff3a0,#ffb300 35%,#fff3a0 55%,#c98a00) border-box;box-shadow:0 0 30px rgba(255,210,63,.6)}
+#card .tw{position:absolute;width:6px;height:6px;background:#fff3a0;box-shadow:6px 0 0 #fff3a0,-6px 0 0 #fff3a0,0 6px 0 #fff3a0,0 -6px 0 #fff3a0;animation:tw 1.2s steps(2) infinite}
+#card .skill{grid-column:2;font-size:17px;font-weight:700;background:rgba(255,255,255,.08);border-radius:10px;padding:6px 10px;margin:0}
+#card .skill b{color:var(--star)}
+#card .pic{grid-row:1/4;display:grid;place-items:center;background:rgba(255,255,255,.06);border-radius:14px;min-height:250px}
+#card h3{margin:0;font-family:var(--f-dot);font-weight:400;font-size:32px;color:var(--star)}
+#card .prof{font-size:20px;font-weight:700;margin:0;line-height:1.5}
+#card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:17px}
+#card dt{color:var(--soft)} #card dd{margin:0;font-weight:700}
+#card .my{grid-column:1/-1;display:flex;align-items:center;gap:14px;font-size:17px;color:var(--soft);font-weight:700}
+#card .btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:12px}
+#card .btns .pill{font-size:20px;padding:8px 22px}
+.sz{position:relative}
+.sz i{position:absolute;background:rgba(255,226,120,.9);box-shadow:0 0 6px rgba(255,210,63,.8);border:1px solid rgba(26,31,74,.6);box-sizing:border-box}
+
+/* パートナーの とくぎ（演出だけ。むずかしさと記録は変わらない） */
+.fx{position:absolute;pointer-events:none;z-index:28;animation:fxgo var(--dur,1s) ease-out forwards}
+@keyframes fxgo{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx,0),var(--dy,0)) scale(var(--sc,.4));opacity:0}}
+.fx.star{width:6px;height:6px;background:var(--c,#ffd23f);box-shadow:6px 0 0 var(--c,#ffd23f),-6px 0 0 var(--c,#ffd23f),0 6px 0 var(--c,#ffd23f),0 -6px 0 var(--c,#ffd23f)}
+.fx.dot{width:10px;height:10px;background:var(--c,#ffd23f)}
+.fx.bub{width:16px;height:16px;border-radius:50%;border:3px solid rgba(200,240,255,.9);background:rgba(200,240,255,.15)}
+.fx.txt{font-size:26px;color:var(--c,#f06c9b);font-weight:900;text-shadow:0 2px 0 var(--navy)}
+.fx.ring{border:5px solid rgba(160,230,255,.85);border-radius:50%;animation:ringgo var(--dur,1.4s) ease-out forwards}
+@keyframes ringgo{from{transform:scale(.1);opacity:1}to{transform:scale(1);opacity:0}}
+.fx.fall{animation:fall var(--dur,2s) linear forwards}
+@keyframes fall{from{transform:translate(0,0)}to{transform:translate(var(--dx,0),620px)}}
+#arch{position:absolute;left:0;top:0;width:960px;height:532px;pointer-events:none;z-index:27;animation:archgo 3.6s ease forwards}
+@keyframes archgo{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
+.partner.hop{animation:hop .5s ease}
+@keyframes hop{40%{transform:translateY(-22px)}}
+
 /* 戦い */
 #battle .hero{position:absolute;left:39px;top:170px;width:162px}
-#battle .foe{position:absolute;left:766px;top:148px;width:148px;filter:saturate(.35) brightness(.6);transition:filter 1.2s ease}
+#battle .foe{position:absolute;filter:saturate(.35) brightness(.6);transition:filter 1.2s ease}
 #battle .foe.healed{filter:none}
 #battle .board-panel{position:absolute;left:232px;top:58px;width:496px;height:378px;background:var(--panel);border:2px solid rgba(111,183,255,.5);border-radius:20px}
 #battle .quit{position:absolute;left:14px;top:12px;font-size:18px;padding:6px 18px;border-width:3px}
-#battle .hintbtn{position:absolute;left:50%;top:448px;transform:translateX(-50%)}
+#battle .tools{position:absolute;left:0;right:0;top:446px;display:flex;justify-content:center;gap:18px}
+#battle .tools .pill{font-size:24px;padding:8px 26px}
+#toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);background:rgba(20,26,70,.95);border:2px solid var(--star);border-radius:10px;
+  padding:4px 16px;font-size:17px;font-weight:700;white-space:nowrap;z-index:35;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
 .cell{position:absolute;width:var(--C);height:var(--C);box-sizing:border-box}
 .cell.empty{background:rgba(20,26,70,.88);border:2px solid var(--line)}
 .cell.empty::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;background:rgba(255,226,120,.55)}
 .cell.hint{animation:hint 1s steps(2) infinite}
+.ghost-on{position:absolute;box-sizing:border-box;border:3px dashed #fff;background:var(--bd);opacity:.55;z-index:3;pointer-events:none}
 @keyframes hint{50%{background:rgba(255,210,63,.55)}}
 /* ピース：ドット風のふち・光・影を、内側の影で描く */
 .piece{position:absolute;touch-action:none;z-index:5;transform-origin:0 0;transition:transform .15s ease}
-.piece.small{transform:scale(.7)}
+.piece.small{transform:scale(var(--ts))}
 .piece.drag{z-index:20;filter:drop-shadow(0 10px 0 rgba(0,0,0,.25))}
 .piece.home{transition:left .18s ease,top .18s ease,transform .15s ease}
-.piece .blk{position:absolute;width:var(--C);height:var(--C);box-sizing:border-box;border:3px solid var(--navy);
+.piece .blk,.mini .blk{position:absolute;box-sizing:border-box;border:3px solid var(--navy);
   box-shadow:inset 5px 5px 0 var(--hi),inset -5px -5px 0 var(--sh);background:var(--bd)}
+.piece .blk{width:var(--C);height:var(--C)}
 .piece .blk::after{content:"";position:absolute;left:7px;top:7px;width:5px;height:5px;background:#fff}
 .piece.sel .blk{outline:3px solid #fff;outline-offset:-1px}
 .c-yel{--bd:#ffd23f;--hi:#fff3a0;--sh:#de9614}
 .c-pnk{--bd:#f06c9b;--hi:#ffbed7;--sh:#be3c6e}
 .c-mnt{--bd:#3cc47c;--hi:#aaf0c8;--sh:#1e8c55}
+.c-sky{--bd:#4fc3f7;--hi:#c4eeff;--sh:#1f8cc0}
+.c-org{--bd:#ff8a1f;--hi:#ffd09c;--sh:#c45e00}
+
+/* 手助けの箱（主人公の上に出す） */
+#hintBox{position:absolute;left:10px;top:62px;width:216px;background:rgba(20,26,70,.96);border:3px solid var(--star);border-radius:16px;padding:10px 10px 12px;z-index:32;box-sizing:border-box}
+#hintBox h3{margin:0 0 8px;font-size:17px;text-align:center;color:var(--star)}
+#hintBox .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#hintBox .opt{background:rgba(255,255,255,.07);border-radius:10px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hintBox .opt span{font-size:13px;color:var(--soft);font-weight:700}
+#hintBox .opt.ok{background:rgba(255,210,63,.22);outline:3px solid var(--star)}
+#hintBox .opt.ok span{color:var(--star)}
+#hintBox .msg{font-size:14px;font-weight:700;text-align:center;margin:8px 0 0;color:#fff}
+#hintBox .one{display:grid;place-items:center;height:150px}
+#hintBox .close{display:block;margin:10px auto 0;font-size:16px;padding:4px 18px;border-width:3px}
+.mini{position:relative}
+.mini.ghost .blk{opacity:.55;border-style:dashed;box-shadow:none}
 
 /* なおった！ */
 #result{position:absolute;left:262px;top:282px;width:436px;background:rgba(20,26,70,.95);border:4px solid var(--star);border-radius:18px;
-  padding:14px 20px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:30}
+  padding:14px 20px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:30;box-sizing:border-box}
 #result .big{font-family:var(--f-dot);font-size:40px;color:var(--star);line-height:1}
 #result .st{font-size:34px;letter-spacing:6px;color:var(--star);line-height:1}
 #result .st .off{color:#4a5590}
 #result .ally{font-size:20px;font-weight:700}
+#result .row{display:flex;gap:14px}
+#result .row .pill{font-size:22px;padding:8px 24px}
 .spark{position:absolute;width:8px;height:8px;background:var(--star);z-index:6;
   box-shadow:8px 0 0 var(--star),-8px 0 0 var(--star),0 8px 0 var(--star),0 -8px 0 var(--star);animation:tw 1s steps(2) infinite}
 @keyframes tw{50%{opacity:.2}}
@@ -134,7 +235,7 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
   <!-- タイトル -->
   <section class="screen" id="title">
     <img class="hero" src="img/hero.png" alt="">
-    <img class="usagi" src="img/usagi.png" alt="" style="filter:saturate(.35) brightness(.6)">
+    <img class="usagi" src="img/usagi.png" alt="">
     <div class="logo">せいざパズル</div>
     <div class="sub">こわれた せいざを なおす 宇宙の たび</div>
     <button class="pill gold go" id="btnStart">はじめる</button>
@@ -170,9 +271,21 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
   <section class="screen" id="map" hidden>
     <svg class="path" viewBox="0 0 960 532" aria-hidden="true"><polyline id="mapLine" fill="none" stroke="rgba(255,226,120,.55)" stroke-width="4" stroke-dasharray="4 10"/></svg>
     <div class="who" id="who"></div>
-    <div class="tag">はじまりの 銀河</div>
+    <button class="arrow l" id="galPrev" aria-label="まえの 銀河">◀</button>
+    <div class="tag" id="mapTag"></div>
+    <button class="arrow r" id="galNext" aria-label="つぎの 銀河">▶</button>
+    <button class="pill zbtn" id="btnZukan">ずかん</button>
+    <img class="hero" id="mapHero" src="img/hero.png" alt="" style="position:absolute;left:24px;top:330px;width:81px">
     <div id="nodes"></div>
-    <div class="msg" id="mapMsg">ひかっている せいざを タッチしよう</div>
+    <div class="msg" id="mapMsg"></div>
+  </section>
+
+  <!-- なかま ずかん -->
+  <section class="screen" id="zukan" hidden>
+    <button class="pill back" id="zBack">ちずへ</button>
+    <div class="tag" id="zTag"></div>
+    <div class="rows" id="zRows"></div>
+    <div class="suits" id="zSuits"></div>
   </section>
 
   <!-- 戦い -->
@@ -183,95 +296,228 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
     <div class="tag" id="bTag"></div>
     <button class="pill quit" id="btnQuit">やめる</button>
     <div id="field"></div>
-    <button class="pill hintbtn" id="btnHint">ヒント</button>
+    <div class="tools">
+      <button class="pill" id="btnHint">ヒント</button>
+      <button class="pill" id="btnRot">まわす</button>
+      <button class="pill" id="btnFlip">うらがえす</button>
+    </div>
+    <div id="toast"></div>
   </section>
 
 </div></div>
 <div id="turn">タブレットを よこに してね</div>
 
 <script>
-/* ===== 1. 設定と、問題のデータ ===================================== */
+/* ===== 1. 設定 ====================================================== */
 const SAVE_KEY = 'seizapuzzle_save_v1';   // 保存の名前（一度決めたら変えない）
-const C = 52;                             // マス1つの大きさ（舞台の中の点の数）
-const BOARD_TOP = 80;                     // 盤のいちばん上の位置
-const TRAY = 0.7;                         // 手持ちのピースの大きさ（盤の70%）
+const TEST = location.hash === '#test';   // URLの最後に #test をつけると、ぜんぶ開く（ためし用。保存はしない）
+const BOARD_TOP = 76;                     // 盤のいちばん上の位置
 
 // いきもの（IDはローマ字。一度決めたら変えない）
 const CREATURES = {
-  usagi:{name:'うさぎ座'}, neko:{name:'ねこ座'}, inu:{name:'いぬ座'}, hiyoko:{name:'ひよこ座'},
-  kuma:{name:'くま座'}, kaeru:{name:'かえる座'}, buta:{name:'ぶた座'}, risu:{name:'りす座'}, zou:{name:'ぞう座'}
+  usagi:'うさぎ座', neko:'ねこ座', inu:'いぬ座', hiyoko:'ひよこ座', kuma:'くま座', kaeru:'かえる座', buta:'ぶた座', risu:'りす座', zou:'ぞう座',
+  sakana:'さかな座', tako:'たこ座', kani:'かに座', iruka:'いるか座', kame:'かめ座', kurage:'くらげ座', pengin:'ペンギン座', hitode:'ひとで座', kujira:'くじら座',
+  unicorn:'ユニコーン座', dragon:'ちびドラゴン座', fukurou:'ふくろう座', chou:'ちょうちょ座', katatsumuri:'かたつむり座', kirin:'きりん座', flamingo:'フラミンゴ座', chameleon:'カメレオン座', niji:'にじの鳥座'
 };
-// 地図にならべる順番（はじまりの銀河）
-const MAP1 = ['usagi','neko','inu','hiyoko','kuma','kaeru','buta','risu','zou'];
 
-// ステージ（①では 1-1 だけ）。board＝盤のマス、pieces＝ピースの形と正解の位置
-const STAGES = {
-  '1-1':{ galaxy:1, no:1, boss:false, creature:'usagi', rotate:false,
-    board:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[1,3],[2,1]],
-    pieces:[
-      {id:'I3', color:'yel', cells:[[0,0],[0,1],[0,2]], ans:[0,0], home:[328,334]},
-      {id:'L3', color:'pnk', cells:[[0,0],[0,1],[1,1]], ans:[1,0], home:[487,316]},
-      {id:'D2', color:'mnt', cells:[[0,0],[0,1]],       ans:[1,2], home:[610,334]}
-    ]}
+// ピースの形（マスの並び。[たての位置, よこの位置]）
+const SHAPES = {
+  D2:[[0,0],[0,1]],
+  I3:[[0,0],[0,1],[0,2]],
+  L3:[[0,0],[1,0],[1,1]],
+  I4:[[0,0],[0,1],[0,2],[0,3]],
+  O4:[[0,0],[0,1],[1,0],[1,1]],
+  T4:[[0,0],[0,1],[0,2],[1,1]],
+  L4:[[0,0],[1,0],[2,0],[2,1]],
+  S4:[[0,1],[0,2],[1,0],[1,1]],
+  P5:[[0,0],[0,1],[1,0],[1,1],[2,0]],
+  N5:[[0,0],[1,0],[1,1],[2,1],[3,1]],
+  Y5:[[0,1],[1,0],[1,1],[2,1],[3,1]]
 };
-// ★の基準（とりあえずの数値。試遊のあとで決め直す）
-function starsFor(sec){ return sec<=30 ? 3 : sec<=60 ? 2 : 1; }
+const COLORS = ['yel','pnk','mnt','sky','org'];
+
+// ひとことプロフィール
+const PROFILE = {
+  usagi:'ながい みみで、ほしの こえを きく', neko:'よるに なると、ほしを ひとつ なめる', inu:'ながれぼしを おいかけるのが だいすき',
+  hiyoko:'うまれた ばかりの ほしを あたためている', kuma:'ほしの はちみつを ためている', kaeru:'あめの ひに ほしを ぴょんと とばす',
+  buta:'ほしの においを かぎわける', risu:'しっぽに ほしを かくしている', zou:'はなで ほしに みずを やる、銀河の おおきな まもりがみ',
+  sakana:'ほしの なみを すいすい およぐ', tako:'8ぽんの あしで、ほしを ならべる', kani:'はさみで ほしの かたちを ととのえる',
+  iruka:'ジャンプして ほしに タッチする', kame:'こうらに ほしの ちずが かいてある', kurage:'ふわふわ ひかって、みちを てらす',
+  pengin:'こおりの ほしの うえを すべる', hitode:'じぶんが ほしだと おもっている', kujira:'しおで ほしを ふきあげる、うみの 銀河の おう',
+  unicorn:'つのから にじを だす', dragon:'ひの かわりに、ほしの こなを ふく', fukurou:'ほしの なまえを ぜんぶ しっている',
+  chou:'はねの もようが まいにち かわる', katatsumuri:'からの なかに、ちいさな 銀河が ある', kirin:'ながい くびで、たかい ほしに とどく',
+  flamingo:'かたあしで ほしの うえに たつ', chameleon:'ほしの いろに かわれる', niji:'はねを ひろげると、銀河に にじが かかる'
+};
+// パートナーの とくぎ（各銀河の 1〜4、5〜8、ボス で1つずつ）
+const SKILLS = {
+  kira:     { name:'きらきら',       desc:'ピースを おくと、ほしが はじける' },
+  nagare:   { name:'ながれぼし',     desc:'ピースを ひっぱると、ひかりの しっぽが つく' },
+  shower:   { name:'ほしの シャワー', desc:'なおすと、ほしが ふってくる' },
+  awa:      { name:'あわ',           desc:'ピースを おくと、あわが のぼる' },
+  nami:     { name:'なみ',           desc:'なおすと、なみの わが ひろがる' },
+  shiofuki: { name:'しおふき',       desc:'なおすと、ほしの しおが ふきあがる' },
+  nijitail: { name:'にじの しっぽ',  desc:'ピースを ひっぱると、にじいろの しっぽが つく' },
+  heart:    { name:'ハート',         desc:'ピースを おくと、ハートが はねる' },
+  arch:     { name:'にじの アーチ',  desc:'なおすと、おおきな にじが かかる' }
+};
+const SKILL_BY_GAL = { 1:['kira','nagare','shower'], 2:['awa','nami','shiofuki'], 3:['nijitail','heart','arch'] };
+function skillOf(cid){
+  for(const g of [1,2,3]){ const i = GALAXIES[g].creatures.indexOf(cid); if(i>=0) return SKILL_BY_GAL[g][i<4?0:i<8?1:2]; }
+  return null;
+}
+// 宇宙服の色（銀河の9体がそろうと、1色ふえる）。線の色だけを変えた絵に差しかえる
+const SUITS = [
+  { id:'base',  name:'みずいろ', dot:'#4fc3f7', img:'hero',       need:0 },
+  { id:'pink',  name:'ピンク',   dot:'#f06c9b', img:'hero_pink',  need:1 },
+  { id:'green', name:'みどり',   dot:'#3cc47c', img:'hero_green', need:2 },
+  { id:'gold',  name:'きんいろ', dot:'#ffd23f', img:'hero_gold',  need:3 }
+];
+
+// 銀河ごとの決まり
+//  rotate＝回せるか、flip＝裏返せるか、count＝ステージ1〜8のピースの数、boss＝ボスのピースの数
+//  maxW/maxH＝盤の大きさのめやす（マスの数）、star＝★の基準（ピース1つあたりの秒数：★3まで, ★2まで）
+const GALAXIES = {
+  1:{ name:'はじまりの 銀河', bg:'hajimari', rotate:false, flip:false,
+      shapes:['D2','I3','L3'], count:[2,2,2,2,3,3,3,3], boss:4, maxW:5, maxH:3, star:[10,20],
+      creatures:['usagi','neko','inu','hiyoko','kuma','kaeru','buta','risu','zou'] },
+  2:{ name:'うみの 銀河', bg:'umi', rotate:true, flip:false,
+      shapes:['I4','O4','T4','L4','S4','L3'], count:[3,3,3,3,3,3,3,3], boss:4, maxW:6, maxH:4, star:[15,30],
+      creatures:['sakana','tako','kani','iruka','kame','kurage','pengin','hitode','kujira'] },
+  3:{ name:'ふしぎの 銀河', bg:'fushigi', rotate:true, flip:true,
+      shapes:['L4','S4','P5','N5','Y5','L3'], count:[3,3,3,3,4,4,4,4], boss:5, maxW:7, maxH:5, star:[20,40],
+      creatures:['unicorn','dragon','fukurou','chou','katatsumuri','kirin','flamingo','chameleon','niji'] }
+};
+function starsFor(sec, g, n){
+  const [a,b] = GALAXIES[g].star;
+  return sec <= a*n ? 3 : sec <= b*n ? 2 : 1;
+}
 
 /* ===== 2. 保存（端末の中） ========================================= */
 function newSave(){
-  return { v:1, player:null, settings:{startGalaxy:1}, progress:{}, allies:[], logs:[] };
+  return { v:1, player:null, settings:{startGalaxy:1}, progress:{}, allies:[], logs:[], zukan:{}, partner:null, suit:'base' };
 }
 let save = load();
 function load(){
   try{
     const raw = localStorage.getItem(SAVE_KEY);
     if(!raw) return newSave();
-    const d = JSON.parse(raw);
     // あとから項目が増えても、足りないところだけ足す（今ある記録は消さない）
-    return Object.assign(newSave(), d);
+    return Object.assign(newSave(), JSON.parse(raw));
   }catch(e){ return newSave(); }
 }
 function store(){
+  if(TEST) return; // ためし用のときは保存しない
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){ /* 保存できない端末でも遊べる */ }
 }
 
-/* ===== 3. 画面の切りかえと、大きさ合わせ =========================== */
+/* ===== 3. 形の計算（回す・裏返す・そろえる） ======================== */
+function norm(cells){
+  const r0 = Math.min(...cells.map(c=>c[0])), c0 = Math.min(...cells.map(c=>c[1]));
+  return cells.map(([r,c]) => [r-r0, c-c0]).sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+}
+const keyOf = cells => JSON.stringify(norm(cells));
+const rot90 = cells => norm(cells.map(([r,c]) => [c, -r]));   // 時計回りに90°
+const mirror = cells => norm(cells.map(([r,c]) => [r, -c]));  // 左右を反転
+const sizeOf = cells => [Math.max(...cells.map(c=>c[0]))+1, Math.max(...cells.map(c=>c[1]))+1]; // [たて, よこ]
+function orientations(base, withFlip){
+  const out = [], seen = new Set();
+  const starts = withFlip ? [norm(base), mirror(base)] : [norm(base)];
+  starts.forEach(s => { let x = s; for(let i=0;i<4;i++){ const k = keyOf(x); if(!seen.has(k)){ seen.add(k); out.push(x); } x = rot90(x); } });
+  return out;
+}
+// 「はじめの向き」から「置いた向き」まで、最短で何回まわせばよいか（裏返しは回数に数えない）
+function minRot(from, to, withFlip){
+  const goal = keyOf(to);
+  let best = Infinity;
+  const starts = withFlip ? [norm(from), mirror(from)] : [norm(from)];
+  starts.forEach(s => { let x = s; for(let i=0;i<4;i++){ if(keyOf(x)===goal) best = Math.min(best, i); x = rot90(x); } });
+  return best === Infinity ? 0 : best;
+}
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+
+/* ===== 4. 問題を作る（ピースをくっつけて盤の形を作るので、必ず解ける） == */
+function makeProblem(g, n, isBoss){
+  const G = GALAXIES[g];
+  const maxW = G.maxW + (isBoss?1:0), maxH = G.maxH + (isBoss?1:0);
+  for(let tryNo=0; tryNo<400; tryNo++){
+    const occ = new Map(); const pieces = []; let ok = true;
+    for(let i=0;i<n;i++){
+      // 同じ形は2つまで
+      let id; do{ id = pick(G.shapes); }while(pieces.filter(p=>p.shape===id).length>=2);
+      const sol = pick(orientations(SHAPES[id], G.flip));
+      let at;
+      if(i===0){ at = [0,0]; }
+      else{
+        const cand = [];
+        for(let r=-5;r<=8;r++) for(let c=-6;c<=9;c++){
+          const cells = sol.map(([dr,dc]) => [r+dr, c+dc]);
+          if(cells.some(([a,b]) => occ.has(a+','+b))) continue;
+          let touch = 0;
+          cells.forEach(([a,b]) => [[1,0],[-1,0],[0,1],[0,-1]].forEach(([x,y]) => { if(occ.has((a+x)+','+(b+y))) touch++; }));
+          if(!touch) continue;
+          const all = [...occ.values(), ...cells];
+          const h = Math.max(...all.map(q=>q[0])) - Math.min(...all.map(q=>q[0])) + 1;
+          const w = Math.max(...all.map(q=>q[1])) - Math.min(...all.map(q=>q[1])) + 1;
+          if(w>maxW || h>maxH) continue;
+          cand.push({ at:[r,c], score: w*h - touch*1.5 + Math.random()*3 });
+        }
+        if(!cand.length){ ok = false; break; }
+        cand.sort((a,b) => a.score-b.score);
+        at = cand[rnd(Math.min(3,cand.length))].at;
+      }
+      sol.forEach(([dr,dc]) => occ.set((at[0]+dr)+','+(at[1]+dc), [at[0]+dr, at[1]+dc]));
+      pieces.push({ shape:id, sol, at });
+    }
+    if(!ok) continue;
+    // 盤を左上にそろえる
+    const all = [...occ.values()];
+    const r0 = Math.min(...all.map(q=>q[0])), c0 = Math.min(...all.map(q=>q[1]));
+    const board = all.map(([r,c]) => [r-r0, c-c0]);
+    pieces.forEach((p,i) => {
+      p.at = [p.at[0]-r0, p.at[1]-c0]; p.id = 'p'+i; p.color = COLORS[i % COLORS.length];
+      // 手持ちのときの向き：はじまり＝そのまま、うみ＝回して出す、ふしぎ＝回して、半分は裏返して出す
+      let init = p.sol;
+      if(G.rotate){
+        for(let k=0;k<20;k++){
+          let x = p.sol; const turns = 1+rnd(3);
+          for(let t=0;t<turns;t++) x = rot90(x);
+          if(G.flip && Math.random()<.5) x = mirror(x);
+          init = x;
+          if(keyOf(x)!==keyOf(p.sol)) break;   // 向きが変わるまでやり直す（回しても同じ形のピースはそのまま）
+        }
+      }
+      p.init = init; p.cur = init;
+    });
+    return { board, pieces };
+  }
+  return null;
+}
+
+/* ===== 5. 画面の切りかえと、大きさ合わせ =========================== */
 const $ = s => document.querySelector(s);
 const stage = $('#stage');
 let scale = 1;
-function fit(){
-  scale = Math.min(window.innerWidth/960, window.innerHeight/532);
-  stage.style.transform = `scale(${scale})`;
-}
+function fit(){ scale = Math.min(window.innerWidth/960, window.innerHeight/532); stage.style.transform = `scale(${scale})`; }
 window.addEventListener('resize', fit); fit();
-function show(id){
-  ['title','reg','map','battle'].forEach(s => $('#'+s).hidden = (s!==id));
-}
-// 指の位置を、舞台の中の位置に変える
-function toStage(e){
-  const r = stage.getBoundingClientRect();
-  return { x:(e.clientX - r.left)/scale, y:(e.clientY - r.top)/scale };
-}
+function show(id){ ['title','reg','map','zukan','battle'].forEach(s => $('#'+s).hidden = (s!==id)); const cd = $('#card'); if(cd) cd.remove(); document.querySelectorAll('.fx,#arch').forEach(e => e.remove()); applyLook(); }
+function setBg(name){ stage.style.backgroundImage = `url(img/bg_${name}.png)`; }
+function toStage(e){ const r = stage.getBoundingClientRect(); return { x:(e.clientX - r.left)/scale, y:(e.clientY - r.top)/scale }; }
+if(TEST){ const t = document.createElement('div'); t.className='testbadge'; t.textContent='ためし（保存しない）'; stage.appendChild(t); }
+let toastTimer = null;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 1600); }
 
-/* ===== 4. タイトルと登録 =========================================== */
-$('#btnStart').addEventListener('click', () => {
-  if(save.player) openMap(); else openReg();
-});
-// ランダムな なまえ（ことば × 宇宙のもの）
+/* ===== 6. タイトルと登録 =========================================== */
+$('#btnStart').addEventListener('click', () => { if(save.player) openMap(); else openReg(); });
 const NAME_A = ['きらきら','ふわふわ','にこにこ','ぴかぴか','げんきな','ひかる','そらとぶ','ちいさな','まるい','はやい'];
 const NAME_B = ['ほし','すいせい','ロケット','つき','わくせい','ほうきぼし','ユーフォー','ぎんが','オーロラ','にじ','うちゅうねこ','ほしうさぎ'];
-const pick = a => a[Math.floor(Math.random()*a.length)];
 let regId = '', regNick = '', selfMode = false;
-function rollName(){
-  let n; do{ n = pick(NAME_A)+' '+pick(NAME_B); }while(n===regNick);
-  regNick = n; $('#nameBox').textContent = n;
-}
+function rollName(){ let n; do{ n = pick(NAME_A)+' '+pick(NAME_B); }while(n===regNick); regNick = n; $('#nameBox').textContent = n; }
 function openReg(){
   show('reg'); regId=''; selfMode=false; $('#idBox').textContent='－'; $('#regErr').textContent='';
   $('#inNick').hidden = true; $('#nameBox').hidden = false; $('#btnReroll').hidden = false;
   $('#btnSelf').textContent = 'じぶんで うつ'; rollName();
 }
-// 数字ボタン（0〜9 と けす）
 ['1','2','3','4','5','6','7','8','9','けす','0'].forEach(k => {
   const b = document.createElement('button'); b.type='button'; b.textContent=k;
   if(k==='けす') b.className='del';
@@ -297,79 +543,129 @@ $('#regForm').addEventListener('submit', e => {
   save.player = { id:regId, nick }; store(); openMap();
 });
 
-/* ===== 5. 銀河の地図 =============================================== */
-// ノードの位置（なみの形にならべる）
+/* ===== 7. 銀河の地図 =============================================== */
+const sidOf = (g,i) => i===8 ? `${g}-B` : `${g}-${i+1}`;
+function galaxyOpen(g){ return TEST || g <= (save.settings.startGalaxy||1) || !!save.progress[`${g-1}-B`]; }
+function stageOpen(g,i){
+  if(!galaxyOpen(g)) return false;
+  if(TEST || i===0) return true;
+  if(i===8) return [0,1,2,3,4,5,6,7].every(k => save.progress[sidOf(g,k)]);
+  return !!save.progress[sidOf(g,i-1)];
+}
 const NODE_POS = [[150,300],[240,220],[330,300],[420,220],[510,300],[600,220],[690,300],[780,220],[850,330]];
-function openMap(){
-  show('map');
-  $('#who').textContent = `${save.player.nick} さん`;
+let mapG = 1;
+function openMap(g){
+  if(g) mapG = g;
+  else{ mapG = 1; for(let k=3;k>=1;k--) if(galaxyOpen(k)){ mapG = k; break; } }
+  const G = GALAXIES[mapG];
+  show('map'); setBg(G.bg);
+  $('#who').textContent = `${save.player ? save.player.nick : ''} さん`;
+  $('#mapTag').textContent = G.name;
+  $('#galPrev').hidden = mapG===1; $('#galNext').hidden = mapG===3;
   const box = $('#nodes'); box.innerHTML = '';
   $('#mapLine').setAttribute('points', NODE_POS.map(([x,y]) => `${x},${y}`).join(' '));
-  MAP1.forEach((cid, i) => {
-    const sid = i===8 ? '1-B' : `1-${i+1}`;
-    const exists = !!STAGES[sid];
-    const done = !!save.progress[sid];
-    const open = exists && !done;
+  G.creatures.forEach((cid, i) => {
+    const sid = sidOf(mapG,i), done = !!save.progress[sid], open = stageOpen(mapG,i);
     const b = document.createElement('button');
     b.className = 'node' + (i===8?' boss':'') + (done?' done':open?' open':' lock');
     const [x,y] = NODE_POS[i];
     b.style.left = (x-46)+'px'; b.style.top = (y-50)+'px';
     const st = done ? '★'.repeat(save.progress[sid].stars) : '';
     b.innerHTML = `<span class="ring"><img src="img/${cid}.png" alt=""></span><span class="lbl">${i===8?'ボス':sid}</span><span class="stars">${st}</span>`;
-    b.setAttribute('aria-label', done||open ? `${sid} ${CREATURES[cid].name}` : `${sid} まだ ひらいていない`);
+    b.setAttribute('aria-label', done||open ? `${sid} ${CREATURES[cid]}` : `${sid} まだ ひらいていない`);
     b.addEventListener('click', () => {
-      if(exists){ startBattle(sid); return; }
+      if(done || open){ startBattle(mapG, i); return; }
       b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
-      $('#mapMsg').textContent = 'この せいざは じゅんびちゅう だよ';
+      $('#mapMsg').textContent = !galaxyOpen(mapG) ? 'まえの 銀河の ボスを なおすと ひらくよ' : i===8 ? '8つの せいざを なおすと ボスが でるよ' : 'まえの せいざを なおすと ひらくよ';
     });
     box.appendChild(b);
   });
-  $('#mapMsg').textContent = Object.keys(save.progress).length ? 'なおした せいざは もういちど あそべるよ' : 'ひかっている せいざを タッチしよう';
+  $('#mapMsg').textContent = galaxyOpen(mapG) ? 'ひかっている せいざを タッチしよう' : 'まえの 銀河の ボスを なおすと ひらくよ';
 }
+$('#galPrev').addEventListener('click', () => openMap(Math.max(1, mapG-1)));
+$('#btnZukan').addEventListener('click', openZukan);
+$('#galNext').addEventListener('click', () => openMap(Math.min(3, mapG+1)));
 
-/* ===== 6. 戦い ===================================================== */
+/* ===== 8. 戦い ===================================================== */
 let B = null; // いまの戦いのようす
-function startBattle(sid){
-  const S = STAGES[sid];
-  show('battle');
-  $('#bTag').textContent = `はじまりの 銀河  ${sid}  ${CREATURES[S.creature].name}`;
-  const foe = $('#foe'); foe.src = `img/${S.creature}.png`; foe.classList.remove('healed');
-  $('#btnHint').hidden = false;
-  const field = $('#field'); field.innerHTML = '';
-  // 盤の左の位置（まん中にそろえる）
-  const cols = Math.max(...S.board.map(c=>c[1]))+1;
-  const left = 480 - cols*C/2;
-  B = { sid, S, left, t0:performance.now(), occ:{}, placed:{}, sel:null,
-        rot:0, rotMin:0, flip:0, replace:0, hint:{h4:0,h1:0,h2:0}, firstHint:null, over:false };
-  // 盤のマス
+function startBattle(g, i){
+  const G = GALAXIES[g], isBoss = i===8, sid = sidOf(g,i), cid = G.creatures[i];
+  const n = isBoss ? G.boss : G.count[i];
+  const P = makeProblem(g, n, isBoss);
+  show('battle'); setBg(G.bg + (isBoss?'_boss':''));
+  $('#bTag').textContent = `${G.name}  ${isBoss?'ボス':sid}  ${CREATURES[cid]}`;
+  // いきもの：はみ出さない大きさで、ドットがくずれない整数倍にする
+  const foe = $('#foe'); foe.classList.remove('healed');
+  foe.onload = () => {
+    const s = Math.max(2, Math.floor(Math.min(4, 210/foe.naturalWidth, 260/foe.naturalHeight)));
+    const w = foe.naturalWidth*s, h = foe.naturalHeight*s;
+    foe.style.width = w+'px'; foe.style.left = (845 - w/2)+'px'; foe.style.top = (isBoss ? 340 : 392) - h + 'px';
+  };
+  foe.src = `img/${cid}.png`;
+  // ボタン：回せない銀河では「まわす」を、裏返せない銀河では「うらがえす」を出さない
+  $('#btnRot').hidden = !G.rotate; $('#btnFlip').hidden = !G.flip; $('#btnHint').hidden = false;
+  $('#field').innerHTML = '';
+  // 盤の大きさ：マスの大きさを、盤が板に収まるように決める
+  const [rows, cols] = sizeOf(P.board);
+  const C = Math.min(52, Math.floor(440/cols), Math.floor(190/rows));
+  stage.style.setProperty('--C', C+'px');
+  const left = Math.round(480 - cols*C/2);
+  B = { g, i, sid, cid, isBoss, G, P, C, left, t0:performance.now(), occ:{}, placed:{}, sel:null, hintLv:{}, hintKind:null, hintFor:null,
+        rot:0, flip:0, replace:0, hint:{h4:0,h1:0,h2:0}, firstHint:null, over:false };
   B.cellEls = {};
-  S.board.forEach(([r,c]) => {
+  P.board.forEach(([r,c]) => {
     const d = document.createElement('div'); d.className = 'cell empty';
     d.style.left = (left + c*C)+'px'; d.style.top = (BOARD_TOP + r*C)+'px';
-    field.appendChild(d); B.cellEls[r+','+c] = d;
+    $('#field').appendChild(d); B.cellEls[r+','+c] = d;
   });
-  // ピース
+  layoutTray(BOARD_TOP + rows*C + 16);
   B.els = {};
-  S.pieces.forEach(p => {
-    const el = document.createElement('div'); el.className = `piece home small c-${p.color}`;
-    const w = (Math.max(...p.cells.map(c=>c[1]))+1)*C, h = (Math.max(...p.cells.map(c=>c[0]))+1)*C;
-    el.style.width = w+'px'; el.style.height = h+'px';
-    p.cells.forEach(([r,c]) => { const k = document.createElement('div'); k.className='blk'; k.style.left=(c*C)+'px'; k.style.top=(r*C)+'px'; el.appendChild(k); });
-    el.style.left = p.home[0]+'px'; el.style.top = p.home[1]+'px';
-    field.appendChild(el); B.els[p.id] = el;
-    bindDrag(el, p);
-  });
+  P.pieces.forEach(p => { const el = document.createElement('div'); el.className = `piece home small c-${p.color}`; $('#field').appendChild(el); B.els[p.id] = el; drawPiece(p); goHome(el,p); bindDrag(el,p); });
+  select(P.pieces[0].id);
 }
+// 手持ちの場所を決める：どの向きに回しても入る、正方形の「わく」を順にならべる
+function layoutTray(top){
+  const X0 = 244, X1 = 716, Y1 = 432, gap = 12;
+  // 手持ちのマス1つは、なるべく36点の大きさにする（盤のマスが小さいときは、手持ちも小さくしすぎない）
+  for(let ts=Math.min(1, 36/B.C); ts>=.35; ts-=.05){
+    const slots = []; let x = X0, y = top, rowH = 0;
+    for(const p of B.P.pieces){
+      const side = Math.max(...sizeOf(p.sol)) * B.C * ts;
+      if(x + side > X1){ x = X0; y += rowH + gap; rowH = 0; }
+      slots.push({ x, y, side }); x += side + gap; rowH = Math.max(rowH, side);
+    }
+    if(y + rowH <= Y1 || ts <= .36){
+      // 行ごとにまん中へ寄せる
+      [...new Set(slots.map(s=>s.y))].forEach(ry => {
+        const rs = slots.filter(s=>s.y===ry); const last = rs[rs.length-1];
+        const sh = (X1 - X0 - (last.x + last.side - X0))/2; rs.forEach(s => s.x += sh);
+      });
+      B.ts = ts; stage.style.setProperty('--ts', ts);
+      B.P.pieces.forEach((p,k) => p.slot = slots[k]);
+      return;
+    }
+  }
+}
+function drawPiece(p){
+  const el = B.els[p.id]; el.innerHTML = '';
+  const [h,w] = sizeOf(p.cur);
+  el.style.width = (w*B.C)+'px'; el.style.height = (h*B.C)+'px';
+  p.cur.forEach(([r,c]) => { const k = document.createElement('div'); k.className='blk'; k.style.left=(c*B.C)+'px'; k.style.top=(r*B.C)+'px'; el.appendChild(k); });
+}
+function homeXY(p){
+  const [h,w] = sizeOf(p.cur), s = p.slot;
+  return [s.x + (s.side - w*B.C*B.ts)/2, s.y + (s.side - h*B.C*B.ts)/2];
+}
+function goHome(el,p){ el.classList.add('home','small'); const [x,y] = homeXY(p); el.style.left=x+'px'; el.style.top=y+'px'; }
 
-// ピースを指で動かす
+// ピースを指で動かす（タップは：手持ち＝回す、盤の上＝手持ちにもどす）
 function bindDrag(el, p){
   let start=null, off=null, moved=false;
   el.addEventListener('pointerdown', e => {
     if(B.over) return;
     e.preventDefault(); el.setPointerCapture(e.pointerId);
     const s = toStage(e);
-    // 手持ちのときは小さいので、大きくなっても指の下の場所がずれないように合わせる
-    const sc = B.placed[p.id] ? 1 : TRAY;
+    const sc = B.placed[p.id] ? 1 : B.ts;   // 手持ちは小さいので、大きくなっても指の下がずれないように合わせる
     start = s; off = { x:(s.x - parseFloat(el.style.left))/sc, y:(s.y - parseFloat(el.style.top))/sc }; moved=false;
     select(p.id);
   });
@@ -380,85 +676,135 @@ function bindDrag(el, p){
       moved = true; el.classList.remove('home','small'); el.classList.add('drag');
       if(B.placed[p.id]){ unplace(p); B.replace++; }   // 盤から持ち上げた＝置き直し
     }
-    if(moved){ el.style.left = (s.x-off.x)+'px'; el.style.top = (s.y-off.y)+'px'; }
+    if(moved){ el.style.left = (s.x-off.x)+'px'; el.style.top = (s.y-off.y)+'px'; skillDrag(s.x, s.y); }
   });
   const end = () => {
     if(!start) return;
     start = null; el.classList.remove('drag');
     if(!moved){
-      // タップ：盤の上のピースなら手持ちにもどす
       if(B.placed[p.id]){ unplace(p); B.replace++; goHome(el,p); }
+      else if(B.G.rotate) rotatePiece(p);
       return;
     }
-    // いちばん近いマスに吸いつけて、入るかどうか調べる
-    const c = Math.round((parseFloat(el.style.left) - B.left)/C);
-    const r = Math.round((parseFloat(el.style.top) - BOARD_TOP)/C);
-    if(fits(p, r, c)){ place(p, r, c); el.style.left=(B.left+c*C)+'px'; el.style.top=(BOARD_TOP+r*C)+'px'; checkClear(); }
+    const c = Math.round((parseFloat(el.style.left) - B.left)/B.C);
+    const r = Math.round((parseFloat(el.style.top) - BOARD_TOP)/B.C);
+    if(fits(p, r, c)){ place(p, r, c); el.style.left=(B.left+c*B.C)+'px'; el.style.top=(BOARD_TOP+r*B.C)+'px'; skillPlace(p, r, c); checkClear(); }
     else goHome(el, p);
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
 }
-function goHome(el,p){ el.classList.add('home','small'); el.style.left=p.home[0]+'px'; el.style.top=p.home[1]+'px'; }
-function fits(p, r, c){
-  return p.cells.every(([dr,dc]) => {
-    const k = (r+dr)+','+(c+dc);
-    return B.cellEls[k] && !B.occ[k];
-  });
-}
-function place(p, r, c){
-  B.placed[p.id] = [r,c];
-  p.cells.forEach(([dr,dc]) => B.occ[(r+dr)+','+(c+dc)] = p.id);
-  clearHint();
-}
-function unplace(p){
-  const at = B.placed[p.id]; if(!at) return;
-  p.cells.forEach(([dr,dc]) => delete B.occ[(at[0]+dr)+','+(at[1]+dc)]);
-  delete B.placed[p.id];
-}
-function select(id){
-  B.sel = id;
-  Object.entries(B.els).forEach(([k,el]) => el.classList.toggle('sel', k===id));
-}
+function fits(p, r, c){ return p.cur.every(([dr,dc]) => { const k = (r+dr)+','+(c+dc); return B.cellEls[k] && !B.occ[k]; }); }
+function place(p, r, c){ B.placed[p.id] = [r,c]; p.cur.forEach(([dr,dc]) => B.occ[(r+dr)+','+(c+dc)] = p.id); clearCellHint(); if(B.hintFor===p.id) closeHint(); }
+function unplace(p){ const at = B.placed[p.id]; if(!at) return; p.cur.forEach(([dr,dc]) => delete B.occ[(at[0]+dr)+','+(at[1]+dc)]); delete B.placed[p.id]; }
+function select(id){ B.sel = id; Object.entries(B.els).forEach(([k,el]) => el.classList.toggle('sel', k===id)); }
+function selPiece(){ return B.P.pieces.find(q => q.id===B.sel && !B.placed[q.id]); }
 
-// 手助け：置き場所を光らせる（①はこれだけ）
+// 回す・裏返す（手持ちのピースだけ）
+function rotatePiece(p){ p.cur = rot90(p.cur); B.rot++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
+function flipPiece(p){ p.cur = mirror(p.cur); B.flip++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
+$('#btnRot').addEventListener('click', () => { if(!B||B.over) return; const p = selPiece(); if(p) rotatePiece(p); else toast('てもちの ピースを えらんでね'); });
+$('#btnFlip').addEventListener('click', () => { if(!B||B.over) return; const p = selPiece(); if(p) flipPiece(p); else toast('てもちの ピースを えらんでね'); });
+
+/* ===== 9. 手助け（4 → 1 → 2 の順に、少しずつ強く） ================= */
+//  h4＝まわすと どうなる？（4つの向き）  h1＝置き場所を光らせる  h2＝向きの影
+function hintOrder(){ return B.G.rotate ? ['h4','h1','h2'] : ['h1']; }
 $('#btnHint').addEventListener('click', () => {
   if(!B || B.over) return;
-  // えらんでいるピースが盤の上なら、まだ置いていないピースをえらぶ
-  let p = B.S.pieces.find(q => q.id===B.sel && !B.placed[q.id]) || B.S.pieces.find(q => !B.placed[q.id]);
+  const p = selPiece() || B.P.pieces.find(q => !B.placed[q.id]);
   if(!p) return;
   select(p.id);
-  clearHint();
-  p.cells.forEach(([dr,dc]) => { const el = B.cellEls[(p.ans[0]+dr)+','+(p.ans[1]+dc)]; if(el) el.classList.add('hint'); });
-  B.hint.h1++;
+  const order = hintOrder();
+  const lv = Math.min(B.hintLv[p.id] || 0, order.length-1);
+  const kind = order[lv];
+  B.hintLv[p.id] = lv+1;
+  B.hint[kind]++;
   if(B.firstHint===null) B.firstHint = Math.round((performance.now()-B.t0)/1000);
+  showHint(kind, p);
 });
-function clearHint(){ document.querySelectorAll('.cell.hint').forEach(el => el.classList.remove('hint')); }
+function miniShape(cells, cell, color, ghost){
+  const [h,w] = sizeOf(cells);
+  const d = document.createElement('div'); d.className = `mini c-${color}` + (ghost?' ghost':''); d.style.width=(w*cell)+'px'; d.style.height=(h*cell)+'px';
+  cells.forEach(([r,c]) => { const k = document.createElement('div'); k.className='blk'; k.style.cssText=`left:${c*cell}px;top:${r*cell}px;width:${cell}px;height:${cell}px;border-width:2px;box-shadow:inset 3px 3px 0 var(--hi),inset -3px -3px 0 var(--sh)`; d.appendChild(k); });
+  return d;
+}
+function showHint(kind, p){
+  closeHint(); clearCellHint();
+  B.hintKind = kind; B.hintFor = p.id;
+  if(kind==='h1'){
+    p.sol.forEach(([dr,dc]) => { const el = B.cellEls[(p.at[0]+dr)+','+(p.at[1]+dc)]; if(el) el.classList.add('hint'); });
+    toast('ひかっている ところに はまるよ');
+    return;
+  }
+  if(kind==='h2'){
+    // 正しい向きの影を、盤の上の正しい場所に重ねる
+    p.sol.forEach(([dr,dc]) => {
+      const g = document.createElement('div'); g.className = `ghost-on c-${p.color}`;
+      g.style.left = (B.left + (p.at[1]+dc)*B.C)+'px'; g.style.top = (BOARD_TOP + (p.at[0]+dr)*B.C)+'px';
+      g.style.width = g.style.height = B.C+'px';
+      $('#field').appendChild(g);
+    });
+    toast('かげと おなじ むきに して、かさねてね');
+    return;
+  }
+  // h4：4つの向きを並べ、はまる向きに★をつける
+  const box = document.createElement('div'); box.id='hintBox';
+  box.innerHTML = '<h3>まわすと、どうなる？</h3><div class="grid"></div><p class="msg"></p>';
+  let x = p.cur, firstOk = -1;
+  ['いまの むき','1かい まわす','2かい まわす','3かい まわす'].forEach((lbl, k) => {
+    const ok = keyOf(x) === keyOf(p.sol);
+    if(ok && firstOk<0) firstOk = k;
+    const o = document.createElement('div'); o.className = 'opt' + (ok?' ok':'');
+    const [h,w] = sizeOf(x); const cell = Math.floor(Math.min(14, 60/Math.max(h,w)));
+    o.appendChild(miniShape(x, cell, p.color));
+    const s = document.createElement('span'); s.textContent = ok ? '★ この むき！' : lbl; o.appendChild(s);
+    box.querySelector('.grid').appendChild(o); x = rot90(x);
+  });
+  box.querySelector('.msg').textContent = firstOk===0 ? 'いまの むきで はまるよ' : firstOk>0 ? `あと ${firstOk}かい まわすと はまるよ` : 'まず うらがえして みよう';
+  const cb = document.createElement('button'); cb.className='pill close'; cb.textContent='とじる'; cb.addEventListener('click', closeHint); box.appendChild(cb);
+  $('#field').appendChild(box);
+}
+function refreshHint(){ if(B.hintKind==='h4' && B.hintFor){ const p = B.P.pieces.find(q=>q.id===B.hintFor); if(p && !B.placed[p.id]) showHint('h4', p); } }
+function closeHint(){ const b = $('#hintBox'); if(b) b.remove(); if(B){ B.hintKind=null; B.hintFor=null; } }
+function clearCellHint(){ document.querySelectorAll('.cell.hint').forEach(el => el.classList.remove('hint')); document.querySelectorAll('.ghost-on').forEach(el => el.remove()); }
 
-// ぜんぶ埋まったか
+/* ===== 10. なおった！ =============================================== */
 function checkClear(){
-  if(Object.keys(B.occ).length !== B.S.board.length) return;
-  B.over = true; clearHint(); select(null);
+  if(Object.keys(B.occ).length !== B.P.board.length) return;
+  B.over = true; clearCellHint(); closeHint(); select(null);
   const sec = Math.round((performance.now()-B.t0)/1000);
-  const stars = starsFor(sec);
+  const n = B.P.pieces.length;
+  const stars = starsFor(sec, B.g, n);
+  // 最短で何回まわせばよかったか（はじめの向きから、置いた向きまで）
+  B.rotMin = B.G.rotate ? B.P.pieces.reduce((s,p) => s + minRot(p.init, p.cur, B.G.flip), 0) : 0;
   record('clear', sec, stars);
-  // すすみ・なかま
   const old = save.progress[B.sid];
   save.progress[B.sid] = { stars: Math.max(stars, old?old.stars:0), bestSec: Math.min(sec, old?old.bestSec:sec) };
-  const first = !save.allies.includes(B.S.creature);
-  if(first) save.allies.push(B.S.creature);
+  const first = !save.allies.includes(B.cid);
+  if(first) save.allies.push(B.cid);
+  // 図鑑：初めてなおした星座の形を、その子だけの形として残す
+  save.zukan = save.zukan || {};
+  if(!save.zukan[B.cid]) save.zukan[B.cid] = { date: today(), shape: B.P.board, times: 0 };
+  save.zukan[B.cid].times++;
   store();
-  // いきものが元気になる
-  $('#foe').classList.add('healed');
-  sparkle();
-  $('#btnHint').hidden = true;
+  $('#foe').classList.add('healed'); sparkle(); skillClear();
+  $('#btnHint').hidden = true; $('#btnRot').hidden = true; $('#btnFlip').hidden = true;
+  // つぎのステージ（ボスのあとは、つぎの銀河の1）
+  let next = null;
+  if(B.i < 8 && stageOpen(B.g, B.i+1)) next = [B.g, B.i+1];
+  else if(B.i === 8 && B.g < 3) next = [B.g+1, 0];
   const card = document.createElement('div'); card.id = 'result';
   card.innerHTML = `<div class="big">なおった！</div>
     <div class="st">${'★'.repeat(stars)}<span class="off">${'★'.repeat(3-stars)}</span></div>
-    <div class="ally">${CREATURES[B.S.creature].name}が ${first?'なかまに なった！':'よろこんでいるよ！'}</div>
-    <button class="pill gold" id="btnBack">ちずへ もどる</button>`;
+    <div class="ally">${CREATURES[B.cid]}が ${first?'なかまに なった！':'よろこんでいるよ！'}</div>
+    <div class="row"><button class="pill" id="btnBack">ちずへ</button>${next?'<button class="pill gold" id="btnNext">つぎへ</button>':''}</div>`;
+  // 盤の下にカードを出す（盤が大きいときは下にずらす）
+  const boardBottom = BOARD_TOP + sizeOf(B.P.board)[0]*B.C;
+  card.style.top = Math.min(Math.max(boardBottom + 10, 250), 330) + 'px';
   $('#field').appendChild(card);
-  $('#btnBack').addEventListener('click', openMap);
+  const g = B.g;
+  $('#btnBack').addEventListener('click', () => openMap(g));
+  if(next) $('#btnNext').addEventListener('click', () => startBattle(next[0], next[1]));
 }
 function sparkle(){
   [[770,140],[900,170],[760,300],[905,320],[835,120]].forEach(([x,y],i) => {
@@ -468,21 +814,22 @@ function sparkle(){
   });
 }
 
-// 1ステージの記録を残す（仕様書 9-2 の項目）
+// 1ステージの記録を残す（仕様書 9-2 の項目。ピースの形も足した）
 function record(result, sec, stars){
+  const rotMin = result==='clear' ? (B.rotMin || 0) : null;
   save.logs.push({
-    t: new Date().toISOString(), galaxy:B.S.galaxy, stage:B.sid, boss:B.S.boss, creature:B.S.creature,
-    result, stars, sec,
-    rot:B.rot, rotMin:B.rotMin, rotWaste:Math.max(0, B.rot-B.rotMin),
+    t: new Date().toISOString(), galaxy:B.g, stage:B.sid, boss:B.isBoss, creature:B.cid,
+    result, stars, sec, pieces:B.P.pieces.map(p=>p.shape),
+    rot:B.rot, rotMin, rotWaste: result==='clear' ? Math.max(0, B.rot-rotMin) : null,
     flip:B.flip, replace:B.replace,
     hint:{...B.hint}, firstHintSec:B.firstHint
   });
   store();
 }
 
-/* ===== 7. やめる（確認はページの中で） ============================== */
+/* ===== 11. やめる（確認はページの中で） ============================= */
 $('#btnQuit').addEventListener('click', () => {
-  if(B && B.over){ openMap(); return; }
+  if(B && B.over){ openMap(B.g); return; }
   const a = document.createElement('div'); a.className='ask';
   a.innerHTML = `<div class="box"><p>やめて ちずに もどる？</p>
     <div class="row"><button class="pill" id="askNo">つづける</button><button class="pill gold" id="askYes">やめる</button></div></div>`;
@@ -491,9 +838,146 @@ $('#btnQuit').addEventListener('click', () => {
   a.querySelector('#askYes').addEventListener('click', () => {
     a.remove();
     record('quit', Math.round((performance.now()-B.t0)/1000), 0);
-    B.over = true; openMap();
+    B.over = true; openMap(B.g);
   });
 });
+
+/* ===== 12. 見た目（宇宙服の色・パートナー） ======================== */
+function today(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+const galaxyDone = g => GALAXIES[g].creatures.every(c => save.allies.includes(c));
+const doneCount = () => [1,2,3].filter(galaxyDone).length;
+function suitOk(su){ return TEST || doneCount() >= su.need; }
+function applyLook(){
+  const su = SUITS.find(x => x.id===save.suit) || SUITS[0];
+  document.querySelectorAll('.hero').forEach(h => { const src = `img/${su.img}.png`; if(!h.src.endsWith(src)) h.src = src; });
+  document.querySelectorAll('.partner').forEach(el => el.remove());
+  if(!save.partner) return;
+  // 地図と戦いで、主人公の足もとに小さく出す
+  // [画面, 左の位置, 足もとの高さ, いちばん大きいときの倍率]（地図の主人公は小さいので、パートナーも小さく）
+  [['#map', 98, 440, 1], ['#battle', 196, 396, 2]].forEach(([sel, x, bottom, mx]) => {
+    const im = document.createElement('img'); im.className='partner'; im.src = `img/${save.partner}.png`; im.alt='';
+    im.onload = () => { const s = Math.max(1, Math.floor(Math.min(mx, 90/im.naturalWidth, 100/im.naturalHeight)));
+      im.style.width = (im.naturalWidth*s)+'px'; im.style.left = x+'px'; im.style.top = (bottom - im.naturalHeight*s)+'px'; };
+    $(sel).appendChild(im);
+  });
+}
+
+/* ===== 12-2. とくぎの演出 ========================================== */
+const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mySkill = () => save.partner ? skillOf(save.partner) : null;
+function fx(cls, x, y, o={}){
+  if(calm) return;
+  const d = document.createElement('div'); d.className = 'fx '+cls;
+  d.style.left = x+'px'; d.style.top = y+'px';
+  ['dx','dy','dur','sc','c'].forEach(k => { if(o[k]!==undefined) d.style.setProperty('--'+k, o[k]); });
+  if(o.text) d.textContent = o.text;
+  if(o.w){ d.style.width = o.w+'px'; d.style.height = o.w+'px'; d.style.marginLeft = (-o.w/2)+'px'; d.style.marginTop = (-o.w/2)+'px'; }
+  if(o.delay) d.style.animationDelay = o.delay+'s';
+  stage.appendChild(d);
+  d.addEventListener('animationend', () => d.remove());
+  setTimeout(() => d.remove(), 5000);
+}
+function hopPartner(){ const pt = document.querySelector('#battle .partner'); if(!pt) return; pt.classList.remove('hop'); void pt.offsetWidth; pt.classList.add('hop'); }
+// ピースを置いたとき
+function skillPlace(p, r, c){
+  hopPartner();
+  const sk = mySkill(); if(!sk) return;
+  const [h,w] = sizeOf(p.cur);
+  const cx = B.left + (c + w/2)*B.C, cy = BOARD_TOP + (r + h/2)*B.C;
+  if(sk==='kira') for(let k=0;k<10;k++){ const a = Math.random()*Math.PI*2, d = 40+Math.random()*50; fx('star', cx, cy, {dx:Math.cos(a)*d+'px', dy:Math.sin(a)*d+'px', dur:'.8s'}); }
+  if(sk==='awa') for(let k=0;k<8;k++) fx('bub', cx-30+Math.random()*60, cy, {dx:(Math.random()*30-15)+'px', dy:(-90-Math.random()*80)+'px', dur:(1+Math.random()*.6)+'s', sc:1.2, delay:k*.06});
+  if(sk==='heart') for(let k=0;k<5;k++) fx('txt', cx-14, cy-14, {text:'♥', dx:(Math.random()*120-60)+'px', dy:(-50-Math.random()*60)+'px', dur:'1s', sc:.8, c:['#f06c9b','#ff9ec4','#ffd23f'][k%3]});
+}
+// ピースを引っぱっているとき（光のしっぽ）
+let lastTrail = 0;
+function skillDrag(x, y){
+  const sk = mySkill(); if(sk!=='nagare' && sk!=='nijitail') return;
+  const now = performance.now(); if(now - lastTrail < 35) return; lastTrail = now;
+  const c = sk==='nagare' ? '#fff3a0' : ['#ff5c5c','#ffa53b','#ffe14d','#5ee07a','#4fc3f7','#8f7bff'][Math.floor(now/60)%6];
+  fx('dot', x-5, y-5, {c, dur:'.6s', sc:.2});
+}
+// なおったとき
+function skillClear(){
+  hopPartner(); setTimeout(hopPartner, 550);
+  const sk = mySkill(); if(!sk || calm) return;
+  if(sk==='shower') for(let k=0;k<45;k++) fx('star fall', Math.random()*960, -20 - Math.random()*200, {dx:(Math.random()*60-30)+'px', dur:(1.6+Math.random()*1.2)+'s', c:['#ffd23f','#fff3a0','#ffffff'][k%3]});
+  if(sk==='nami') for(let k=0;k<3;k++) fx('ring', 480, 180, {w:520, dur:'1.6s', delay:k*.35});
+  if(sk==='shiofuki'){ const fx0 = 845, fy0 = 160; for(let k=0;k<30;k++) fx('star', fx0, fy0, {dx:(Math.random()*240-120)+'px', dy:(-60-Math.random()*150)+'px', dur:(1+Math.random()*.6)+'s', c:['#c4eeff','#ffd23f','#ffffff'][k%3], delay:Math.random()*.4}); }
+  if(sk==='arch'){
+    const old = $('#arch'); if(old) old.remove();
+    const cols = ['#ff5c5c','#ffa53b','#ffe14d','#5ee07a','#4fc3f7','#6f7bff','#b36bff'];
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.id='arch'; svg.setAttribute('viewBox','0 0 960 532');
+    svg.innerHTML = cols.map((c,k) => `<path d="M ${60+k*14} 532 A ${420-k*14} ${420-k*14} 0 0 1 ${900-k*14} 532" fill="none" stroke="${c}" stroke-width="14" opacity=".85"/>`).join('');
+    stage.appendChild(svg); setTimeout(() => svg.remove(), 3800);
+  }
+}
+
+/* ===== 13. なかま ずかん ============================================ */
+function openZukan(){
+  show('zukan'); setBg('hajimari');
+  $('#zTag').textContent = `なかま ずかん  ${save.allies.length} / 27`;
+  const rows = $('#zRows'); rows.innerHTML = '';
+  [1,2,3].forEach(g => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<div class="gname">${GALAXIES[g].name}</div><div class="row9"></div>`;
+    GALAXIES[g].creatures.forEach((cid, i) => {
+      const got = save.allies.includes(cid);
+      const pr = save.progress[sidOf(g,i)];
+      const b = document.createElement('button');
+      b.className = 'zc' + (got ? ` b${pr ? pr.stars : 1}` : ' lock') + (save.partner===cid ? ' pt' : '');
+      b.innerHTML = `<img src="img/${cid}.png" alt=""><span class="nm">${got ? CREATURES[cid] : '？？？'}</span><span class="st">${got && pr ? '★'.repeat(pr.stars) : ''}</span>`;
+      b.setAttribute('aria-label', got ? CREATURES[cid] : 'まだ なかまに なっていない');
+      b.addEventListener('click', () => {
+        if(got) openCard(g, i);
+        else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+      });
+      wrap.querySelector('.row9').appendChild(b);
+    });
+    rows.appendChild(wrap);
+  });
+  // 宇宙服の色
+  const su = $('#zSuits'); su.innerHTML = '<span class="lab">うちゅうふくの いろ</span>';
+  SUITS.forEach(x => {
+    const b = document.createElement('button'); b.className = 'suit' + (save.suit===x.id ? ' on' : '');
+    b.innerHTML = `<i style="background:${x.dot}"></i>${suitOk(x) ? x.name : '？'}`;
+    b.disabled = !suitOk(x);
+    b.setAttribute('aria-label', suitOk(x) ? x.name : `銀河を ${x.need}つ そろえると つかえる`);
+    b.addEventListener('click', () => { save.suit = x.id; store(); openZukan(); });
+    su.appendChild(b);
+  });
+}
+$('#zBack').addEventListener('click', () => openMap());
+function openCard(g, i){
+  const cid = GALAXIES[g].creatures[i], z = (save.zukan||{})[cid] || {}, pr = save.progress[sidOf(g,i)] || {stars:1};
+  const c = document.createElement('div'); c.id='card';
+  const isP = save.partner===cid;
+  c.innerHTML = `<div class="box b${pr.stars}">
+      <div class="pic"><img id="cPic" src="img/${cid}.png" alt=""></div>
+      <h3>${CREATURES[cid]}</h3>
+      <p class="prof">${PROFILE[cid]}</p>
+      <dl><dt>なかまに なった日</dt><dd>${z.date || '－'}</dd>
+          <dt>なおした かいすう</dt><dd>${z.times || 1} かい</dd>
+          <dt>いちばんの ★</dt><dd>${'★'.repeat(pr.stars)}</dd></dl>
+      <p class="skill">とくぎ：<b>${SKILLS[skillOf(cid)].name}</b>　${SKILLS[skillOf(cid)].desc}</p>
+      <div class="my"><span>わたしが なおした せいざ</span><div class="sz" id="cShape"></div></div>
+      <div class="btns"><button class="pill${isP?'':' gold'}" id="cPartner">${isP ? 'パートナーを やめる' : 'パートナーに する'}</button><button class="pill" id="cClose">とじる</button></div>
+    </div>`;
+  stage.appendChild(c);
+  // ★3（金）のカードは、まわりに星がまたたく
+  if(pr.stars===3) [[-8,30],[620,60],[-6,330],[612,300],[300,-8],[150,392],[470,392]].forEach(([x,y],k) => {
+    const t = document.createElement('div'); t.className='tw'; t.style.left=x+'px'; t.style.top=y+'px'; t.style.animationDelay=(k*.17)+'s'; c.querySelector('.box').appendChild(t); });
+  const pic = c.querySelector('#cPic');
+  pic.onload = () => { const s = Math.max(1, Math.floor(Math.min(4, 210/pic.naturalWidth, 240/pic.naturalHeight))); pic.style.width = (pic.naturalWidth*s)+'px'; };
+  // その子が初めてなおした星座の形
+  if(z.shape){
+    const [h,w] = sizeOf(z.shape); const cell = Math.floor(Math.min(16, 200/w, 60/h));
+    const box = c.querySelector('#cShape'); box.style.width = (w*cell)+'px'; box.style.height = (h*cell)+'px';
+    z.shape.forEach(([r,cc]) => { const d = document.createElement('i'); d.style.cssText = `left:${cc*cell}px;top:${r*cell}px;width:${cell}px;height:${cell}px`; box.appendChild(d); });
+  }
+  c.querySelector('#cClose').addEventListener('click', () => c.remove());
+  c.querySelector('#cPartner').addEventListener('click', () => { save.partner = isP ? null : cid; store(); c.remove(); openZukan(); });
+  c.addEventListener('click', e => { if(e.target===c) c.remove(); });
+}
 
 show('title');
 </script>
