@@ -87,7 +87,52 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 
 /* パートナー（主人公の足もと） */
 .partner{position:absolute;z-index:4}
-#map .zbtn{position:absolute;right:14px;top:10px;font-size:20px;padding:6px 20px;border-width:3px}
+#map .side{position:absolute;right:12px;top:10px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:6}
+#map .side .pill{font-size:18px;padding:5px 18px;border-width:3px}
+#map .side .jump{animation:pulse 1.6s ease-in-out infinite}
+/* ダイアログ（子ども向け） */
+.dlg{position:absolute;inset:0;background:rgba(10,12,40,.7);display:grid;place-items:center;z-index:60}
+.dlg .box{width:700px;max-height:500px;overflow:auto;background:rgba(20,26,70,.98);border:4px solid var(--line);border-radius:18px;padding:16px 22px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.dlg h3{margin:0;font-family:var(--f-dot);font-weight:400;font-size:26px;color:var(--star);text-align:center}
+.dlg p{margin:0;font-size:18px;font-weight:700;line-height:1.5}
+.dlg .two{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.dlg .qr{background:#fff;padding:8px;border-radius:10px;line-height:0}
+.dlg .qr svg{width:220px;height:220px}
+.dlg textarea{width:100%;box-sizing:border-box;height:110px;font-size:14px;border-radius:10px;border:3px solid var(--line);padding:8px;font-family:ui-monospace,monospace;color:var(--navy);background:#fff;-webkit-user-select:text;user-select:text}
+.dlg .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.dlg .row .pill{font-size:20px;padding:8px 22px}
+.dlg video{width:100%;max-height:300px;background:#000;border-radius:10px}
+.dlg .note{font-size:15px;color:var(--soft)}
+
+/* 先生画面（舞台の外に、ふつうのページとして出す） */
+#teacher{position:fixed;inset:0;z-index:200;background:#10153a;color:#fff;overflow:auto;font-family:var(--f-body);-webkit-user-select:text;user-select:text;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px;box-sizing:border-box}
+#teacher .in{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+#teacher header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#teacher h1{margin:0;font-family:var(--f-dot);font-weight:400;font-size:26px;color:var(--star)}
+#teacher nav{display:flex;gap:8px;flex-wrap:wrap}
+#teacher nav button,#teacher .btn{font-size:16px;padding:8px 16px;border-radius:999px;background:#1d2560;border:2px solid var(--line);color:#fff;font-weight:700}
+#teacher nav button.on{background:var(--star);color:var(--navy);border-color:#fff3a0}
+#teacher .btn.gold{background:var(--star);color:var(--navy);border-color:#fff3a0}
+#teacher section{background:#161d4c;border:1px solid #2f3a85;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+#teacher h2{margin:0;font-size:19px}
+#teacher p,#teacher li{margin:0;font-size:15px;line-height:1.6;color:#dfe6ff}
+#teacher textarea{width:100%;box-sizing:border-box;height:120px;font-family:ui-monospace,monospace;font-size:13px;border-radius:10px;padding:8px;border:2px solid var(--line);background:#fff;color:#111}
+#teacher .tw{overflow-x:auto}
+#teacher table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+#teacher th,#teacher td{border-bottom:1px solid #2f3a85;padding:7px 8px;text-align:left;white-space:nowrap}
+#teacher th{color:var(--soft);font-weight:700;position:sticky;top:0;background:#161d4c}
+#teacher tr.click{cursor:pointer} #teacher tr.click:hover td{background:#1f2864}
+#teacher .chip{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#2b3478}
+#teacher .chip.warn{background:#7a2e4a} #teacher .chip.good{background:#1e6b46}
+#teacher select,#teacher input[type=text]{font-size:15px;padding:5px 8px;border-radius:8px;border:2px solid var(--line);background:#fff;color:#111}
+#teacher .flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#teacher .qrbox{background:#fff;padding:10px;border-radius:10px;line-height:0;width:max-content}
+#teacher .qrbox svg{width:260px;height:260px}
+#teacher .msg{font-size:15px;font-weight:700;color:var(--star);min-height:1.4em}
+#teacher svg.chart text{fill:#c9d6ff;font-size:11px}
+#teacher video{width:100%;max-width:480px;border-radius:10px;background:#000}
+
 
 /* なかま ずかん */
 #zukan .back{position:absolute;left:14px;top:12px;font-size:18px;padding:6px 18px;border-width:3px}
@@ -226,7 +271,7 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 
 /* たて向きのときの案内 */
 #turn{position:fixed;inset:0;background:var(--sky);display:none;place-items:center;text-align:center;z-index:99;font-size:28px;font-weight:900;padding:24px}
-@media (orientation:portrait){#turn{display:grid}}
+@media (orientation:portrait){#turn{display:grid}} body.t-open #turn{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -274,7 +319,13 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
     <button class="arrow l" id="galPrev" aria-label="まえの 銀河">◀</button>
     <div class="tag" id="mapTag"></div>
     <button class="arrow r" id="galNext" aria-label="つぎの 銀河">▶</button>
-    <button class="pill zbtn" id="btnZukan">ずかん</button>
+    <div class="side">
+      <button class="pill" id="btnZukan">ずかん</button>
+      <button class="pill" id="btnSend">きろくを おくる</button>
+      <button class="pill" id="btnLoadSet">せっていを よみこむ</button>
+      <button class="pill" id="btnSound">おと：オン</button>
+      <button class="pill gold jump" id="btnJump" hidden>とびきゅう しけん</button>
+    </div>
     <img class="hero" id="mapHero" src="img/hero.png" alt="" style="position:absolute;left:24px;top:330px;width:81px">
     <div id="nodes"></div>
     <div class="msg" id="mapMsg"></div>
@@ -306,6 +357,9 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--star);outline-o
 
 </div></div>
 <div id="turn">タブレットを よこに してね</div>
+<div id="teacher" hidden></div>
+<script src="lib/qrcode.js"></script>
+<script src="lib/jsQR.js"></script>
 
 <script>
 /* ===== 1. 設定 ====================================================== */
@@ -508,7 +562,7 @@ let toastTimer = null;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 1600); }
 
 /* ===== 6. タイトルと登録 =========================================== */
-$('#btnStart').addEventListener('click', () => { if(save.player) openMap(); else openReg(); });
+$('#btnStart').addEventListener('click', () => { initAudio(); if(save.player) openMap(); else openReg(); });
 const NAME_A = ['きらきら','ふわふわ','にこにこ','ぴかぴか','げんきな','ひかる','そらとぶ','ちいさな','まるい','はやい'];
 const NAME_B = ['ほし','すいせい','ロケット','つき','わくせい','ほうきぼし','ユーフォー','ぎんが','オーロラ','にじ','うちゅうねこ','ほしうさぎ'];
 let regId = '', regNick = '', selfMode = false;
@@ -545,14 +599,15 @@ $('#regForm').addEventListener('submit', e => {
 
 /* ===== 7. 銀河の地図 =============================================== */
 const sidOf = (g,i) => i===8 ? `${g}-B` : `${g}-${i+1}`;
-function galaxyOpen(g){ return TEST || g <= (save.settings.startGalaxy||1) || !!save.progress[`${g-1}-B`]; }
+function galaxyOpen(g){ return TEST || g <= (save.settings.startGalaxy||1) || !!save.progress[`${g-1}-B`] || !!((save.jumps||{})[g]||{}).pass; }
 function stageOpen(g,i){
   if(!galaxyOpen(g)) return false;
   if(TEST || i===0) return true;
   if(i===8) return [0,1,2,3,4,5,6,7].every(k => save.progress[sidOf(g,k)]);
   return !!save.progress[sidOf(g,i-1)];
 }
-const NODE_POS = [[150,300],[240,220],[330,300],[420,220],[510,300],[600,220],[690,300],[780,220],[850,330]];
+// 右のボタンの列とかさならないように、少し左に寄せる
+const NODE_POS = [[150,300],[230,220],[310,300],[390,220],[470,300],[550,220],[630,300],[710,220],[760,350]];
 let mapG = 1;
 function openMap(g){
   if(g) mapG = g;
@@ -581,19 +636,35 @@ function openMap(g){
     box.appendChild(b);
   });
   $('#mapMsg').textContent = galaxyOpen(mapG) ? 'ひかっている せいざを タッチしよう' : 'まえの 銀河の ボスを なおすと ひらくよ';
+  updSound();
+  $('#btnJump').hidden = !jumpReady(mapG);
+  if(jumpReady(mapG)) $('#mapMsg').textContent = 'とびきゅう しけんに ちょうせん できるよ！';
 }
 $('#galPrev').addEventListener('click', () => openMap(Math.max(1, mapG-1)));
 $('#btnZukan').addEventListener('click', openZukan);
+$('#btnSend').addEventListener('click', openSend);
+$('#btnLoadSet').addEventListener('click', openLoadSet);
+$('#btnSound').addEventListener('click', () => { save.settings.sound = !soundOn(); store(); updSound(); if(soundOn()) sfx('place'); });
+$('#btnJump').addEventListener('click', () => startBattle(mapG+1, 4, {jump:true}));
+// 名前のところを2秒おしつづけると、先生画面のあいことばを聞く
+(() => {
+  let timer = null; const who = $('#who');
+  who.style.pointerEvents = 'auto';
+  who.addEventListener('pointerdown', () => { timer = setTimeout(askPass, 2000); });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev => who.addEventListener(ev, () => clearTimeout(timer)));
+})();
 $('#galNext').addEventListener('click', () => openMap(Math.min(3, mapG+1)));
 
 /* ===== 8. 戦い ===================================================== */
 let B = null; // いまの戦いのようす
-function startBattle(g, i){
-  const G = GALAXIES[g], isBoss = i===8, sid = sidOf(g,i), cid = G.creatures[i];
+function startBattle(g, i, opt={}){
+  const jump = !!opt.jump;
+  const G = GALAXIES[g], isBoss = i===8, sid = jump ? `${g}-T` : sidOf(g,i), cid = G.creatures[i];
+  sfx(isBoss ? 'boss' : 'start');
   const n = isBoss ? G.boss : G.count[i];
   const P = makeProblem(g, n, isBoss);
   show('battle'); setBg(G.bg + (isBoss?'_boss':''));
-  $('#bTag').textContent = `${G.name}  ${isBoss?'ボス':sid}  ${CREATURES[cid]}`;
+  $('#bTag').textContent = jump ? `とびきゅう しけん  ${G.name}` : `${G.name}  ${isBoss?'ボス':sid}  ${CREATURES[cid]}`;
   // いきもの：はみ出さない大きさで、ドットがくずれない整数倍にする
   const foe = $('#foe'); foe.classList.remove('healed');
   foe.onload = () => {
@@ -610,7 +681,7 @@ function startBattle(g, i){
   const C = Math.min(52, Math.floor(440/cols), Math.floor(190/rows));
   stage.style.setProperty('--C', C+'px');
   const left = Math.round(480 - cols*C/2);
-  B = { g, i, sid, cid, isBoss, G, P, C, left, t0:performance.now(), occ:{}, placed:{}, sel:null, hintLv:{}, hintKind:null, hintFor:null,
+  B = { g, i, sid, cid, isBoss, jump, G, P, C, left, t0:performance.now(), occ:{}, placed:{}, sel:null, hintLv:{}, hintKind:null, hintFor:null,
         rot:0, flip:0, replace:0, hint:{h4:0,h1:0,h2:0}, firstHint:null, over:false };
   B.cellEls = {};
   P.board.forEach(([r,c]) => {
@@ -688,7 +759,7 @@ function bindDrag(el, p){
     }
     const c = Math.round((parseFloat(el.style.left) - B.left)/B.C);
     const r = Math.round((parseFloat(el.style.top) - BOARD_TOP)/B.C);
-    if(fits(p, r, c)){ place(p, r, c); el.style.left=(B.left+c*B.C)+'px'; el.style.top=(BOARD_TOP+r*B.C)+'px'; skillPlace(p, r, c); checkClear(); }
+    if(fits(p, r, c)){ sfx('place'); place(p, r, c); el.style.left=(B.left+c*B.C)+'px'; el.style.top=(BOARD_TOP+r*B.C)+'px'; skillPlace(p, r, c); checkClear(); }
     else goHome(el, p);
   };
   el.addEventListener('pointerup', end);
@@ -701,8 +772,8 @@ function select(id){ B.sel = id; Object.entries(B.els).forEach(([k,el]) => el.cl
 function selPiece(){ return B.P.pieces.find(q => q.id===B.sel && !B.placed[q.id]); }
 
 // 回す・裏返す（手持ちのピースだけ）
-function rotatePiece(p){ p.cur = rot90(p.cur); B.rot++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
-function flipPiece(p){ p.cur = mirror(p.cur); B.flip++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
+function rotatePiece(p){ sfx('rot'); p.cur = rot90(p.cur); B.rot++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
+function flipPiece(p){ sfx('rot'); p.cur = mirror(p.cur); B.flip++; drawPiece(p); goHome(B.els[p.id], p); refreshHint(); }
 $('#btnRot').addEventListener('click', () => { if(!B||B.over) return; const p = selPiece(); if(p) rotatePiece(p); else toast('てもちの ピースを えらんでね'); });
 $('#btnFlip').addEventListener('click', () => { if(!B||B.over) return; const p = selPiece(); if(p) flipPiece(p); else toast('てもちの ピースを えらんでね'); });
 
@@ -778,6 +849,8 @@ function checkClear(){
   // 最短で何回まわせばよかったか（はじめの向きから、置いた向きまで）
   B.rotMin = B.G.rotate ? B.P.pieces.reduce((s,p) => s + minRot(p.init, p.cur, B.G.flip), 0) : 0;
   record('clear', sec, stars);
+  sfx('clear');
+  if(B.jump){ jumpPassed(); return; }
   const old = save.progress[B.sid];
   save.progress[B.sid] = { stars: Math.max(stars, old?old.stars:0), bestSec: Math.min(sec, old?old.bestSec:sec) };
   const first = !save.allies.includes(B.cid);
@@ -977,6 +1050,335 @@ function openCard(g, i){
   c.querySelector('#cClose').addEventListener('click', () => c.remove());
   c.querySelector('#cPartner').addEventListener('click', () => { save.partner = isP ? null : cid; store(); c.remove(); openZukan(); });
   c.addEventListener('click', e => { if(e.target===c) c.remove(); });
+}
+
+/* ===== 14. 音（効果音はコードで作る。ファイルはいらない） =========== */
+let actx = null;
+function initAudio(){ try{ if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); }catch(e){ actx = null; } }
+const soundOn = () => save.settings.sound !== false;
+function updSound(){ $('#btnSound').textContent = soundOn() ? 'おと：オン' : 'おと：オフ'; }
+function tone(freq, t0, len, type='square', vol=.08){
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.value = freq; o.connect(g); g.connect(actx.destination);
+  const t = actx.currentTime + t0; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+len);
+  o.start(t); o.stop(t+len+.02);
+}
+function sfx(kind){
+  if(!soundOn() || !actx) return;
+  try{
+    if(kind==='place') tone(880, 0, .08);
+    if(kind==='rot')   tone(520, 0, .05, 'triangle', .1);
+    if(kind==='start') { tone(523,0,.08); tone(784,.09,.1); }
+    if(kind==='clear') [523,659,784,1047].forEach((f,k) => tone(f, k*.1, .16));
+    if(kind==='boss')  [196,247,294].forEach((f,k) => tone(f, k*.14, .3, 'sawtooth', .06));
+    if(kind==='ok')    { tone(988,0,.07); tone(1319,.08,.12); }
+  }catch(e){}
+}
+
+/* ===== 15. とびきゅう試験 =========================================== */
+// その銀河の 1〜4 を すべて★3で なおすと、つぎの銀河の 5ばんと同じ むずかしさの しけんが出る
+function jumpReady(g){
+  if(TEST) return g<3 && !((save.jumps||{})[g+1]||{}).pass;
+  return g<3 && galaxyOpen(g) && !galaxyOpen(g+1) && [0,1,2,3].every(k => (save.progress[sidOf(g,k)]||{}).stars===3);
+}
+function jumpPassed(){
+  save.jumps = save.jumps || {};
+  save.jumps[B.g] = { pass:true, date: today() };
+  store();
+  $('#foe').classList.add('healed'); sparkle(); skillClear();
+  $('#btnHint').hidden = true; $('#btnRot').hidden = true; $('#btnFlip').hidden = true;
+  const card = document.createElement('div'); card.id = 'result';
+  card.innerHTML = `<div class="big">ごうかく！</div><div class="ally">${GALAXIES[B.g].name}が ひらいたよ！</div>
+    <div class="row"><button class="pill gold" id="btnBack">${GALAXIES[B.g].name}へ</button></div>`;
+  card.style.top = '300px'; $('#field').appendChild(card);
+  const g = B.g; $('#btnBack').addEventListener('click', () => openMap(g));
+}
+
+/* ===== 16. コード（きろくコード・せっていコード）の作り方 ============ */
+// 文字 ⇔ URLにも使える英数字（base64url）
+function b64u(bytes){ let s=''; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function unb64u(str){ const s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); }
+async function packText(obj){
+  const raw = new TextEncoder().encode(JSON.stringify(obj));
+  if(window.CompressionStream){ // 使える端末では、ちぢめて短くする
+    const buf = await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();
+    return 'z' + b64u(new Uint8Array(buf));
+  }
+  return 'p' + b64u(raw);
+}
+async function unpackText(body){
+  const bytes = unb64u(body.slice(1));
+  if(body[0]==='z'){
+    const buf = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+    return JSON.parse(new TextDecoder().decode(buf));
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+// いま どこまで すすんだか（いちばん先の なおした ステージ）
+function whereNow(sv){
+  for(let g=3; g>=1; g--) for(let i=8; i>=0; i--) if(sv.progress[sidOf(g,i)]) return sidOf(g,i);
+  return '－';
+}
+function summaryOf(sv){
+  const logs = sv.logs || [];
+  const rotClears = logs.filter(l => l.result==='clear' && l.galaxy>=2).slice(-10);
+  const last20 = logs.slice(-20);
+  return {
+    id: sv.player ? sv.player.id : '?', nick: sv.player ? sv.player.nick : '?',
+    at: whereNow(sv), stars: Object.values(sv.progress).reduce((a,p) => a + p.stars, 0),
+    w10: rotClears.length ? +(rotClears.reduce((a,l) => a + (l.rotWaste||0), 0)/rotClears.length).toFixed(1) : null,
+    hr: last20.length ? Math.round(100 * last20.filter(l => (l.hint.h1+l.hint.h2+l.hint.h4) > 0).length / last20.length) : null,
+    last: logs.length ? logs[logs.length-1].t.slice(0,10) : null,
+    cl: logs.filter(l => l.result==='clear').length, al: (sv.allies||[]).length
+  };
+}
+// 1回分の記録を、短い配列にする（くわしい きろくコード用）
+const LOG_KEYS = ['t','stage','result','stars','sec','rot','rotMin','rotWaste','flip','replace','h4','h1','h2','firstHintSec'];
+function logToArr(l){ return [Math.round(new Date(l.t).getTime()/1000), l.stage, l.result==='clear'?1:0, l.stars, l.sec, l.rot, l.rotMin, l.rotWaste, l.flip, l.replace, l.hint.h4, l.hint.h1, l.hint.h2, l.firstHintSec]; }
+function arrToLog(a){ const o = {}; LOG_KEYS.forEach((k,i) => o[k] = a[i]); o.t = new Date(a[0]*1000).toISOString(); o.result = a[2] ? 'clear' : 'quit'; o.galaxy = +String(a[1])[0]; o.hint = { h4:o.h4, h1:o.h1, h2:o.h2 }; return o; }
+async function makeRecordCode(){
+  const full = { v:1, id:save.player.id, nick:save.player.nick, st:save.settings.startGalaxy||1, made: Math.round(Date.now()/1000),
+    pr: Object.fromEntries(Object.entries(save.progress).map(([k,p]) => [k,[p.stars,p.bestSec]])),
+    al: save.allies, jp: save.jumps || {}, L: save.logs.slice(-200).map(logToArr) };
+  return 'SZR1' + await packText(full);
+}
+function makeQRCodeText(){ return 'SZQ1' + 'p' + b64u(new TextEncoder().encode(JSON.stringify({ ...summaryOf(save), made: Math.round(Date.now()/1000) }))); }
+function qrSvg(text){
+  try{ const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag(4, 2); }
+  catch(e){ return '<p style="color:#111;line-height:1.4">QRを つくれませんでした</p>'; }
+}
+
+/* ===== 17. 子どもの画面：きろくを おくる・せっていを よみこむ ======== */
+function dialog(html){
+  const d = document.createElement('div'); d.className = 'dlg'; d.innerHTML = `<div class="box">${html}</div>`;
+  stage.appendChild(d); return d;
+}
+async function copyText(text, ta, done){
+  try{ await navigator.clipboard.writeText(text); done('コピー できたよ！'); }
+  catch(e){ ta.focus(); ta.select(); done('いろが かわった もじを コピーしてね'); }
+}
+async function openSend(){
+  if(!save.player) return;
+  const code = await makeRecordCode();
+  const d = dialog(`<h3>きろくを おくる</h3>
+    <div class="two"><div class="qr">${qrSvg(makeQRCodeText())}</div>
+      <div style="display:flex;flex-direction:column;gap:8px"><p>せんせいに この QRを みせてね。</p>
+      <p class="note">くわしい きろくは、したの もじを コピーして、ていしゅつしてね。</p></div></div>
+    <textarea id="sendCode" readonly></textarea>
+    <p class="note" id="sendMsg"></p>
+    <div class="row"><button class="pill gold" id="sendCopy">コピーする</button><button class="pill" id="sendClose">とじる</button></div>`);
+  const ta = d.querySelector('#sendCode'); ta.value = code;
+  d.querySelector('#sendCopy').addEventListener('click', () => copyText(code, ta, m => { d.querySelector('#sendMsg').textContent = m; sfx('ok'); }));
+  d.querySelector('#sendClose').addEventListener('click', () => d.remove());
+}
+function openLoadSet(){
+  const d = dialog(`<h3>せっていを よみこむ</h3>
+    <p>せんせいの QRを カメラで よむか、せっていコードを はりつけてね。</p>
+    <div id="camArea"></div>
+    <textarea id="setCode" placeholder="ここに はりつける"></textarea>
+    <p class="note" id="setMsg"></p>
+    <div class="row"><button class="pill" id="setCam">カメラで よむ</button><button class="pill gold" id="setGo">よみこむ</button><button class="pill" id="setClose">とじる</button></div>`);
+  let stop = null;
+  const done = msg => { d.querySelector('#setMsg').textContent = msg; };
+  const tryCode = text => applySettings(text).then(m => { done(m); if(stop){ stop(); stop=null; } });
+  d.querySelector('#setGo').addEventListener('click', () => tryCode(d.querySelector('#setCode').value));
+  d.querySelector('#setCam').addEventListener('click', async () => { if(stop) return; stop = await startScan(d.querySelector('#camArea'), text => tryCode(text), done); });
+  d.querySelector('#setClose').addEventListener('click', () => { if(stop) stop(); d.remove(); });
+}
+async function applySettings(text){
+  const m = String(text).match(/SZS1([zp][A-Za-z0-9_-]+)/);
+  if(!m) return 'せっていコードが みつからないよ';
+  try{
+    const obj = await unpackText(m[1]);
+    const me = save.player ? save.player.id : null;
+    const g = (me && obj.s[me]) || obj.s['*'];
+    if(!g) return 'あなたの ばんごうの せっていは ないよ';
+    save.settings.startGalaxy = +g; save.settings.fromCode = obj.d; store(); sfx('ok');
+    return `よみこんだよ！ ${GALAXIES[+g].name}から はじめられるよ`;
+  }catch(e){ return 'コードが こわれているみたい。もういちど はりつけてね'; }
+}
+// カメラでQRを読む（使えない端末では、はりつけに切りかえる）
+async function startScan(area, onText, onMsg){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.jsQR){ onMsg('この たんまつでは カメラが つかえないよ。はりつけてね'); return null; }
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false }); }
+  catch(e){ onMsg('カメラが つかえないよ。はりつけてね'); return null; }
+  const v = document.createElement('video'); v.setAttribute('playsinline',''); v.muted = true; v.srcObject = stream; area.innerHTML = ''; area.appendChild(v);
+  await v.play().catch(()=>{});
+  const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently:true });
+  let alive = true, lastText = '';
+  const loop = () => {
+    if(!alive) return;
+    if(v.videoWidth){
+      cv.width = v.videoWidth; cv.height = v.videoHeight; cx.drawImage(v, 0, 0);
+      const img = cx.getImageData(0, 0, cv.width, cv.height);
+      const r = jsQR(img.data, img.width, img.height);
+      if(r && r.data && r.data !== lastText){ lastText = r.data; onText(r.data); }
+    }
+    requestAnimationFrame(loop);
+  };
+  loop();
+  return () => { alive = false; stream.getTracks().forEach(t => t.stop()); area.innerHTML = ''; };
+}
+
+/* ===== 18. 先生画面 ================================================= */
+const PASS_HASH = '5b485e1472978bcefde53466fd6c9b66d2ad3beb7a51eded0cceb0069ddd3af6'; // あいことばを元に戻せない形にしたもの
+const T_KEY = 'seizapuzzle_teacher_v1';   // 先生の端末に、集めた記録を残す場所（子どもの記録とは別）
+async function sha256(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function askPass(){
+  const d = dialog(`<h3>せんせい よう</h3><p>あいことばを いれてください。</p>
+    <input id="passIn" type="password" autocomplete="off" style="font-size:24px;padding:8px 12px;border-radius:10px;border:3px solid var(--line);color:var(--navy)">
+    <p class="note" id="passMsg"></p>
+    <div class="row"><button class="pill gold" id="passGo">ひらく</button><button class="pill" id="passClose">とじる</button></div>`);
+  const go = async () => {
+    const w = d.querySelector('#passIn').value.normalize('NFKC').replace(/\s/g,'');
+    let ok = false;
+    try{ ok = (await sha256(w)) === PASS_HASH; }catch(e){ d.querySelector('#passMsg').textContent = 'この たんまつでは しらべられません'; return; }
+    if(ok){ d.remove(); openTeacher(); } else d.querySelector('#passMsg').textContent = 'あいことばが ちがいます';
+  };
+  d.querySelector('#passGo').addEventListener('click', go);
+  d.querySelector('#passIn').addEventListener('keydown', e => { if(e.key==='Enter') go(); });
+  d.querySelector('#passClose').addEventListener('click', () => d.remove());
+  setTimeout(() => d.querySelector('#passIn').focus(), 50);
+}
+function tLoad(){ try{ return JSON.parse(localStorage.getItem(T_KEY)) || { students:{}, settings:{'*':1} }; }catch(e){ return { students:{}, settings:{'*':1} }; } }
+function tStore(t){ try{ localStorage.setItem(T_KEY, JSON.stringify(t)); }catch(e){} }
+let T = null, tTab = 'list', tStop = null;
+function openTeacher(){ T = tLoad(); document.body.classList.add('t-open'); $('#teacher').hidden = false; tRender(); }
+function closeTeacher(){ if(tStop){ tStop(); tStop = null; } $('#teacher').hidden = true; document.body.classList.remove('t-open'); openMap(); }
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// 文字コード・QRの中身を、先生の記録に入れる
+async function tIngest(text){
+  let n = 0, bad = 0;
+  for(const m of String(text).matchAll(/SZR1([zp][A-Za-z0-9_-]+)/g)){
+    try{ const o = await unpackText(m[1]); const logs = (o.L||[]).map(arrToLog);
+      const sv = { player:{id:o.id, nick:o.nick}, progress:Object.fromEntries(Object.entries(o.pr||{}).map(([k,v]) => [k,{stars:v[0],bestSec:v[1]}])), allies:o.al||[], logs };
+      const cur = T.students[o.id] || {};
+      if(!cur.made || cur.made <= o.made){ T.students[o.id] = { nick:o.nick, made:o.made, st:o.st, jp:o.jp, sum:summaryOf(sv), logs, prog:sv.progress, full:true }; }
+      n++;
+    }catch(e){ bad++; }
+  }
+  for(const m of String(text).matchAll(/SZQ1([zp][A-Za-z0-9_-]+)/g)){
+    try{ const o = await unpackText(m[1]); const cur = T.students[o.id] || {};
+      // QRは要約だけ。くわしい記録（logs）があれば、それは残したまま要約だけ新しくする
+      if(!cur.made || cur.made <= o.made){ T.students[o.id] = { ...cur, nick:o.nick, made:o.made, sum:o, full: !!cur.logs }; }
+      n++;
+    }catch(e){ bad++; }
+  }
+  tStore(T);
+  return `${n}人ぶん よみこみました` + (bad ? `（${bad}こは よめませんでした）` : '');
+}
+function tRender(){
+  const tabs = [['list','クラスの いちらん'],['collect','きろくを あつめる'],['set','せっていコード'],['here','この たんまつ']];
+  $('#teacher').innerHTML = `<div class="in">
+    <header><h1>せいざパズル 先生画面</h1>
+      <nav>${tabs.map(([k,l]) => `<button data-tab="${k}" class="${tTab===k?'on':''}">${l}</button>`).join('')}<button id="tClose">とじる</button></nav></header>
+    <div id="tBody"></div></div>`;
+  $('#teacher').querySelectorAll('nav [data-tab]').forEach(b => b.addEventListener('click', () => { if(tStop){ tStop(); tStop=null; } tTab = b.dataset.tab; tRender(); }));
+  $('#tClose').addEventListener('click', closeTeacher);
+  ({ list:tList, collect:tCollect, set:tSet, here:tHere })[tTab]();
+}
+function tList(){
+  const ids = Object.keys(T.students).sort((a,b) => (+a)-(+b));
+  const body = $('#tBody');
+  if(!ids.length){ body.innerHTML = `<section><h2>まだ きろくが ありません</h2><p>「きろくを あつめる」で、子どもの きろくコードを はりつけるか、QRを カメラで よんでください。</p></section>`; return; }
+  const row = id => { const st = T.students[id], s = st.sum || {};
+    const waste = s.w10==null ? '－' : `${s.w10}${s.w10>=3 ? ' <span class="chip warn">多い</span>' : s.w10<1 ? ' <span class="chip good">すくない</span>' : ''}`;
+    return `<tr class="click" data-id="${esc(id)}"><td>${esc(id)}</td><td>${esc(st.nick)}</td><td>${esc(s.at)}</td><td>${s.stars??'－'}</td><td>${s.al??'－'} / 27</td><td>${waste}</td><td>${s.hr==null?'－':s.hr+'%'}</td><td>${esc(s.last||'－')}</td><td>${st.full?'くわしい':'<span class="chip">QRだけ</span>'}</td></tr>`; };
+  body.innerHTML = `<section><h2>クラスの いちらん（${ids.length}人）</h2>
+    <p>むだに回した回数＝回した回数 −（正しい向きまでの最短の回数）。うみ・ふしぎの銀河の、さいきん10回の平均です。名前を押すと、一人ずつのカルテが開きます。</p>
+    <div class="tw"><table><thead><tr><th>番号</th><th>ニックネーム</th><th>いまの場所</th><th>★の合計</th><th>なかま</th><th>むだに回した回数</th><th>手助けを使った割合</th><th>さいごに遊んだ日</th><th>記録</th></tr></thead>
+    <tbody>${ids.map(row).join('')}</tbody></table></div></section><div id="tKarte"></div>`;
+  body.querySelectorAll('tr.click').forEach(tr => tr.addEventListener('click', () => tKarte(tr.dataset.id)));
+}
+function tKarte(id){
+  const st = T.students[id], box = $('#tKarte');
+  if(!st.logs){ box.innerHTML = `<section><h2>${esc(st.nick)}（${esc(id)}）</h2><p>QRの要約だけが届いています。くわしいカルテを見るには、文字の きろくコードを はりつけてください。</p></section>`; box.scrollIntoView({behavior:'smooth'}); return; }
+  const logs = st.logs;
+  // 銀河ごとの表
+  const gRow = g => { const L = logs.filter(l => l.galaxy===g), C = L.filter(l => l.result==='clear');
+    if(!L.length) return `<tr><td>${GALAXIES[g].name}</td><td colspan="8">まだ遊んでいません</td></tr>`;
+    const avg = (arr,f) => arr.length ? (arr.reduce((a,x) => a+f(x),0)/arr.length).toFixed(1) : '－';
+    return `<tr><td>${GALAXIES[g].name}</td><td>${C.length}</td><td>${L.length-C.length}</td><td>${avg(C,l=>l.sec)} 秒</td><td>${g===1?'－':avg(C,l=>l.rotWaste||0)}</td><td>${C.filter(l=>l.stars===3).length}</td><td>${L.reduce((a,l)=>a+l.h4,0)}</td><td>${L.reduce((a,l)=>a+l.h1,0)}</td><td>${L.reduce((a,l)=>a+l.h2,0)}</td></tr>`; };
+  // むだに回した回数のグラフ（うみ・ふしぎで なおした回だけ）
+  const pts = logs.filter(l => l.result==='clear' && l.galaxy>=2);
+  let chart = '<p>うみ・ふしぎの銀河で なおした記録が まだありません。</p>';
+  if(pts.length){
+    const W = 720, H = 220, L0 = 40, R0 = 14, T0 = 14, B0 = 30;
+    const maxY = Math.max(4, ...pts.map(p => p.rotWaste||0));
+    const xs = i => L0 + (pts.length===1 ? (W-L0-R0)/2 : i*(W-L0-R0)/(pts.length-1));
+    const ys = v => T0 + (H-T0-B0) * (1 - v/maxY);
+    const ma = pts.map((p,i) => { const w = pts.slice(Math.max(0,i-4), i+1); return w.reduce((a,x)=>a+(x.rotWaste||0),0)/w.length; });
+    const ticks = [0, Math.round(maxY/2), maxY];
+    chart = `<div class="tw"><svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="むだに回した回数の変化">
+      ${ticks.map(t => `<line x1="${L0}" x2="${W-R0}" y1="${ys(t)}" y2="${ys(t)}" stroke="#2f3a85"/><text x="${L0-6}" y="${ys(t)+4}" text-anchor="end">${t}</text>`).join('')}
+      <polyline fill="none" stroke="#ffd23f" stroke-width="3" points="${ma.map((v,i) => `${xs(i)},${ys(v)}`).join(' ')}"/>
+      ${pts.map((p,i) => `<circle cx="${xs(i)}" cy="${ys(p.rotWaste||0)}" r="4" fill="${p.galaxy===2?'#4fc3f7':'#f06c9b'}"><title>${p.t.slice(0,10)} ${p.stage}：${p.rotWaste}回</title></circle>`).join('')}
+      <text x="${L0}" y="${H-8}">はじめ</text><text x="${W-R0}" y="${H-8}" text-anchor="end">さいきん</text>
+    </svg></div><p>点：1回ごとの「むだに回した回数」（水色＝うみの銀河、ピンク＝ふしぎの銀河）。黄色の線：直近5回の平均。線が下がっていれば、頭の中で回してから置けるようになってきています。</p>`;
+  }
+  const jp = Object.entries(st.jp||{}).filter(([,v]) => v.pass).map(([g,v]) => `${GALAXIES[g].name}（${v.date}）`).join('、') || 'なし';
+  box.innerHTML = `<section><h2>カルテ：${esc(st.nick)}（番号 ${esc(id)}）</h2>
+    <p>始める銀河：${GALAXIES[st.st||1].name}　とびきゅう試験の合格：${jp}　記録の数：${logs.length}回</p>
+    <h2>むだに回した回数の変化</h2>${chart}
+    <h2>銀河ごとの記録</h2>
+    <div class="tw"><table><thead><tr><th>銀河</th><th>なおした</th><th>途中でやめた</th><th>平均の時間</th><th>むだに回した回数（平均）</th><th>★3の回数</th><th>手助け：4つの向き</th><th>手助け：置き場所</th><th>手助け：影</th></tr></thead>
+    <tbody>${[1,2,3].map(gRow).join('')}</tbody></table></div></section>`;
+  box.scrollIntoView({behavior:'smooth'});
+}
+function tCollect(){
+  $('#tBody').innerHTML = `<section><h2>きろくを あつめる</h2>
+    <p>子どもが「きろくを おくる」で出した文字コードを、ここに はりつけて「よみこむ」を押してください。何人ぶんでも、まとめて はりつけられます（Classroomやフォームの回答をそのまま全部コピーしても大丈夫です）。</p>
+    <textarea id="tPaste" placeholder="SZR1… の文字コードを はりつける"></textarea>
+    <div class="flex"><button class="btn gold" id="tRead">よみこむ</button><button class="btn" id="tCam">カメラで QRを よむ</button></div>
+    <p class="msg" id="tMsg"></p><div id="tCamArea"></div>
+    <p>QRには要約だけが入っています。カルテのグラフを見るには、文字コードが必要です。</p></section>`;
+  $('#tRead').addEventListener('click', async () => { $('#tMsg').textContent = await tIngest($('#tPaste').value); });
+  $('#tCam').addEventListener('click', async () => {
+    if(tStop) return;
+    tStop = await startScan($('#tCamArea'), async text => { $('#tMsg').textContent = await tIngest(text) + '（つづけて よめます）'; }, m => $('#tMsg').textContent = m.replace('はりつけてね','文字コードを はりつけてください'));
+  });
+}
+function tSet(){
+  const ids = [...new Set([...Object.keys(T.students), ...Object.keys(T.settings).filter(k => k!=='*')])].sort((a,b) => (+a)-(+b));
+  const opt = v => [1,2,3].map(g => `<option value="${g}" ${(+v)===g?'selected':''}>${GALAXIES[g].name}</option>`).join('');
+  $('#tBody').innerHTML = `<section><h2>せっていコード（始める銀河）</h2>
+    <p>番号ごとに、始める銀河を決めます。決めていない子は「ぜんいん」の設定になります。コードを作って、教室の画面にQRを映すか、文字を配ってください。</p>
+    <div class="tw"><table><thead><tr><th>番号</th><th>ニックネーム</th><th>始める銀河</th></tr></thead><tbody>
+      <tr><td>ぜんいん</td><td>－</td><td><select data-id="*">${opt(T.settings['*']||1)}</select></td></tr>
+      ${ids.map(id => `<tr><td>${esc(id)}</td><td>${esc((T.students[id]||{}).nick||'')}</td><td><select data-id="${esc(id)}">${opt(T.settings[id]||T.settings['*']||1)}</select></td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="flex"><input type="text" id="tAddId" placeholder="番号を足す" inputmode="numeric" style="width:120px"><button class="btn" id="tAdd">足す</button></div>
+    <div class="flex"><button class="btn gold" id="tMake">せっていコードを つくる</button></div>
+    <div id="tSetOut"></div></section>`;
+  $('#tBody').querySelectorAll('select[data-id]').forEach(sel => sel.addEventListener('change', () => { T.settings[sel.dataset.id] = +sel.value; tStore(T); }));
+  $('#tAdd').addEventListener('click', () => { const v = $('#tAddId').value.trim(); if(/^\d{1,4}$/.test(v)){ T.settings[v] = T.settings['*']||1; tStore(T); tSet(); } });
+  $('#tMake').addEventListener('click', async () => {
+    const s = {}; Object.entries(T.settings).forEach(([k,v]) => { if(k==='*' || v !== (T.settings['*']||1)) s[k] = v; });
+    const code = 'SZS1' + await packText({ v:1, d:today(), s });
+    $('#tSetOut').innerHTML = `<div class="qrbox">${qrSvg(code)}</div><textarea readonly id="tSetCode"></textarea><div class="flex"><button class="btn" id="tSetCopy">コピーする</button><span class="msg" id="tSetMsg"></span></div>`;
+    $('#tSetCode').value = code;
+    $('#tSetCopy').addEventListener('click', () => copyText(code, $('#tSetCode'), m => $('#tSetMsg').textContent = m.replace('コピー できたよ！','コピーしました')));
+  });
+}
+function tHere(){
+  const p = save.player || {id:'', nick:''};
+  $('#tBody').innerHTML = `<section><h2>この たんまつの 子ども</h2>
+    <p>この端末で遊んでいる子の設定を、その場で変えられます。</p>
+    <div class="flex"><label>番号 <input type="text" id="hId" value="${esc(p.id)}" inputmode="numeric" style="width:90px"></label>
+      <label>ニックネーム <input type="text" id="hNick" value="${esc(p.nick)}" style="width:180px"></label></div>
+    <div class="flex"><label>始める銀河 <select id="hSt">${[1,2,3].map(g => `<option value="${g}" ${(save.settings.startGalaxy||1)===g?'selected':''}>${GALAXIES[g].name}</option>`).join('')}</select></label></div>
+    <div class="flex"><button class="btn gold" id="hSave">保存する</button><span class="msg" id="hMsg"></span></div>
+    <p>この端末の記録：${save.logs.length}回、なかま ${save.allies.length} / 27</p></section>`;
+  $('#hSave').addEventListener('click', () => {
+    const id = $('#hId').value.trim(), nick = $('#hNick').value.trim();
+    if(!/^\d{1,4}$/.test(id) || !nick){ $('#hMsg').textContent = '番号（数字）とニックネームを入れてください'; return; }
+    save.player = { id, nick }; save.settings.startGalaxy = +$('#hSt').value; store();
+    $('#hMsg').textContent = '保存しました';
+  });
 }
 
 show('title');

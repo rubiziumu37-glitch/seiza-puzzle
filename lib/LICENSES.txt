@@ -1,0 +1,4 @@
+このフォルダの外部ライブラリ
+
+- qrcode.js : QR Code Generator for JavaScript (qrcode-generator 1.4.4) Copyright (c) 2009 Kazuhiko Arase / MIT License
+- jsQR.js : jsQR 1.4.0 (https://github.com/cozmo/jsQR) / Apache License 2.0
