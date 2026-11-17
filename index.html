@@ -1430,13 +1430,59 @@ function tHere(){
       <label>ニックネーム <input type="text" id="hNick" value="${esc(p.nick)}" style="width:180px"></label></div>
     <div class="flex"><label>始める銀河 <select id="hSt">${GAL_IDS.map(g => `<option value="${g}" ${(save.settings.startGalaxy||1)===g?'selected':''}>${GALAXIES[g].name}</option>`).join('')}</select></label></div>
     <div class="flex"><button class="btn gold" id="hSave">保存する</button><span class="msg" id="hMsg"></span></div>
-    <p>この端末の記録：${save.logs.length}回、なかま ${save.allies.length} / ${TOTAL_ALLIES}</p></section>`;
+    <p>この端末の記録：${save.logs.length}回、なかま ${save.allies.length} / ${TOTAL_ALLIES}、いま ${whereNow(save)} まで</p></section>
+    <section><h2>端末が かわった 子を もどす</h2>
+    <p>故障などで端末がかわった子の進みを、<b>この端末に</b>先生が手で合わせます。上の「番号」「ニックネーム」も、ここで一緒に保存します。<br>
+      もどるもの：なおしたステージ・★・なかま（ずかん）。前の進みと★は、先生の端末の「クラスの いちらん」で見られます（きろくを集めてあれば）。<br>
+      もどらないもの：パートナーと宇宙服の色（子どもが選び直します）・ずかんの「なかまに なった日」と「わたしが なおした せいざ」の形・回ごとの記録・とびきゅう試験の合格。</p>
+    <div class="flex"><label>ここまで なおした <select id="mG">${GAL_IDS.map(g => `<option value="${g}">${GALAXIES[g].name}</option>`).join('')}</select></label>
+      <label>の <select id="mI"><option value="-1">まだ ひとつも</option>${[0,1,2,3,4,5,6,7].map(i => `<option value="${i}">${i+1}ばんめ まで</option>`).join('')}<option value="8">ボス まで（ぜんぶ）</option></select></label>
+      <label>★の数（どのステージも） <select id="mS"><option value="1">★</option><option value="2" selected>★★</option><option value="3">★★★</option></select></label></div>
+    <div class="flex"><button class="btn gold" id="mGo">この 端末に もどす</button><span class="msg" id="mMsg"></span></div></section>`;
   $('#hSave').addEventListener('click', () => {
     const id = $('#hId').value.trim(), nick = $('#hNick').value.trim();
     if(!/^\d{1,4}$/.test(id) || !nick){ $('#hMsg').textContent = '番号（数字）とニックネームを入れてください'; return; }
     save.player = { id, nick }; save.settings.startGalaxy = +$('#hSt').value; store();
     $('#hMsg').textContent = '保存しました';
   });
+  // 端末が かわった 子を もどす：2回 おして 決める（1回目は、なにが おきるかを 見せる）
+  let armed = '';
+  const disarm = () => { armed = ''; $('#mGo').textContent = 'この 端末に もどす'; };
+  ['#hId','#hNick','#mG','#mI','#mS'].forEach(q => { $(q).addEventListener('input', disarm); $(q).addEventListener('change', disarm); });
+  $('#mGo').addEventListener('click', () => {
+    const id = $('#hId').value.trim(), nick = $('#hNick').value.trim();
+    const g = +$('#mG').value, i = +$('#mI').value, stars = +$('#mS').value;
+    if(!/^\d{1,4}$/.test(id) || !nick){ disarm(); $('#mMsg').textContent = '上の 番号（数字）とニックネームを入れてください'; return; }
+    const sig = [id,nick,g,i,stars].join('|');
+    const where = `${GALAXIES[g].name}の ${i<0 ? 'はじめ' : i===8 ? 'ボス まで' : (i+1)+'ばんめ まで'}`;
+    if(armed !== sig){
+      armed = sig; $('#mGo').textContent = 'もう いちど おすと もどします';
+      $('#mMsg').textContent = `${id}ばん ${nick}：「${where}」を なおした ことに して、★を ${stars}こずつ 入れます。` +
+        (save.allies.length ? `この端末には もう 記録が あります（なかま ${save.allies.length}）。へる ことは ありません。` : '');
+      return;
+    }
+    const n = restoreProgress(id, nick, g, i, stars);
+    disarm(); tHere();
+    $('#mMsg').textContent = `もどしました（なおした ステージ ${n}こ ぶん）。「とじる」で 地図に もどると、つづきから あそべます`;
+  });
+}
+// 先生が 手で 進みを 合わせる：銀河 g の i 番目（0〜7、8＝ボス、-1＝まだ）まで なおした ことに する。
+// 足すだけ：前から ある ★は へらさない。ずかんの 日付と 形は 入れない（つぎに 自分で なおした ときに 入る）。
+function restoreProgress(id, nick, g, i, stars){
+  let n = 0;
+  for(let gg=1; gg<=g; gg++){
+    const last = gg<g ? 8 : i;
+    for(let k=0; k<=last; k++){
+      const sid = sidOf(gg,k), old = save.progress[sid], cid = GALAXIES[gg].creatures[k];
+      save.progress[sid] = { stars: Math.max(stars, old?old.stars:0), bestSec: old ? old.bestSec : 9999 };
+      if(!save.allies.includes(cid)) save.allies.push(cid);
+      n++;
+    }
+  }
+  save.player = { id, nick };
+  save.settings.restored = { date: today(), g, i, stars };   // 先生が もどした しるし
+  store();
+  return n;
 }
 
 show('title');
